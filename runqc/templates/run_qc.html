@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+<title>{% block title %}{{ super() }} - {{ run_name }}{% endblock title %}</title>
+
+<header>
+  {% block header %}
+  {{ super() }}
+  QC Info for "{{ run_name }}"
+  <s><a href="{{ url_for('run_list') }}" class="clear no-border indent">Up to Run QC List</a></s>
+  {% endblock header %}
+</header>
+
+{% block content %}
+<section id="run_info">
+  <h2>Run Info</h2>
+  <div class="table indent" id="infos">
+    <script>$("#infos").load("{{ gt_project }}_QCreport.infos.html");</script>
+  </div>
+</section>
+
+<section id="fastqc">
+  <h2>FastQC</h2>
+  <ul>
+    <li><a href="fastqc.html">View list of FastQC pages for samples and read directions</a></li>
+    <li><a href="fastqc/">Browse FastQC directory/</a></li>
+  </ul>
+</section>
+
+<section id="read_dist">
+  <h2>Read Distribution</h2>
+  <img src="{{ run_name }}_LANE-001_Read_Distributions.png"
+       alt="Plot of read distribution is not found" ><br/>
+       <a href="{{ run_name }}_LANE-001_Read_Distributions.png" download>
+         <s>[Download above plot]</s></a>
+</section>
+
+<section id="read_count">
+  <h2>Read Count</h2>
+  <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
+  <ul>
+    <li>
+      <a href="{{ run_name }}_Samples_Read_Counts.xls">Download spreadsheet with sample total read counts</a>
+    </li>
+  </ul>
+</section>
+
+<section id="run_metric">
+  <h2>Run Metrics</h2>
+  <div class="csv" id="run_metric_csv"></div>
+  <script>
+    CsvToHtmlTable.init({
+      csv_path: 'Run_Metric_Summary_{{ gt_project }}.csv',
+      element: 'run_metric_csv',
+      allow_download: true,
+      csv_options: {separator: ',', delimiter: '"'},
+      datatables_options: {
+        "processing": true,
+          "paging": true,
+          "scrollX": "98%",
+          "pageLength": 11,
+          "lengthMenu": [ [11, 20, 40, -1], [10, 20, 40, "All"] ],
+          "order": [],
+          "ordering": false,
+      }
+    });
+  </script>
+</section>
+
+<section id="qcreport">
+  <h2>QC Report</h2>
+  <b class="indented_note">Number of reads shown here is number of read pairs.</b>
+  <div class="csv" id="qcreport_csv"></div>
+  <script>
+    CsvToHtmlTable.init({
+      csv_path: '{{ gt_project }}_QCreport.table.csv',
+      element: 'qcreport_csv',
+      allow_download: true,
+      csv_options: {separator: ',', delimiter: '"'},
+      datatables_options: {
+        "processing": true,
+          "paging": true,
+          "scrollX": "98%",
+          "pageLength": 25,
+          "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+          "lengthChange": true,
+          "rowId": "GT_QC_Sample_ID",
+          "order": [[ 1, 'asc' ], [ 3, 'desc' ]],
+      }
+    });
+  </script>
+</section>
+{% endblock %}

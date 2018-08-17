@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+<title>{% block title %}{% endblock %} List</title>
+<header>
+  {% block header %} {{ super() }} List {% endblock header %}
+</header>
+
+{% block topmenu %}
+<script>
+  $(document).ready(function(){
+    $('.topmenu>a').addClass('disabled small');
+  });
+</script>
+{{ super() }}{# is super needed here? or better to omit it? #}
+{% endblock topmenu %}
+
+{% block content %}
+<section id="run_info">
+  <h2>Run Folders:</h2>
+  <ul>
+    <li>List of runs will go here....</li>
+  </ul>
+</section>
+{% endblock content %}

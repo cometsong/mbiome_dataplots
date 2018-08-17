@@ -1,0 +1,60 @@
+{#% extends "meta.html" %#}
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    {% block meta %}{# TODO: can we pull other files into base via super() or extends ??? #}
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Benjamin Leopold in Microbiome Core at JAXGM" />
+    <link rel="icon" href="/static/images/mu-letter-blue.ico" type="image/x-icon">
+    {% endblock meta %}
+
+    {% block head %}
+    <!-- third party core -->
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- dataTables -->
+    <script src="/static/js/jquery.csv.min.js"></script>
+    <script src="/static/js/jquery.dataTables.min.js"></script>
+    <script src="/static/js/dataTables.bootstrap.js"></script>
+    <script src="/static/js/csv_to_html_table.js"></script>
+    <link href="/static/css/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- run_qc -->
+    <!--<script src="/static/js/run_qc_info.js"></script>-->
+    <link href="/static/css/run_qc_info.css" rel="stylesheet" type="text/css" media="screen"/>
+    {% endblock head %}
+
+    <title>{% block title %}Mbiome Core Sequencer Run QC{% endblock title %}</title>
+  </head>
+  <body>
+    <header>
+      {% block header %}
+      <img src="/static/images/mu-letter-blue.png" height="25px">
+      MicrobiomeCore Run 
+      {% endblock header %}
+    </header>
+    {% block topmenu %}
+    <nav class="topmenu">
+      <a href="#run_info"   >Run Info</a>
+      <a href="#fastqc"     >FastQC</a>
+      <a href="#read_dist"  >Read Distribution</a>
+      <a href="#read_count" >Read Count Spreadsheet</a>
+      <a href="#run_metric" >Run Metrics <s>(GT)</s></a>
+      <a href="#qcreport"   >Sample QC Report <s>(GT)</s></a>
+    </nav>
+    {% endblock topmenu %}
+
+    {% block content %}{% endblock content %}
+
+    <footer>
+      {% block footer %}
+      <p>&copy; Copyright 2018 MicrobiomeCore</p>
+      {% endblock footer %}
+    </footer>
+  </body>
+</html>

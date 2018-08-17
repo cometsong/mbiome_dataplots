@@ -1,0 +1,261 @@
+/* Extract from normalize.css by Nicolas Gallagher and Jonathan Neal git.io/normalize */
+html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}
+article,aside,details,figcaption,figure,footer,header,main,menu,nav,section,summary{display:block}
+audio,canvas,progress,video{display:inline-block}progress{vertical-align:baseline}
+audio:not([controls]){display:none;height:0}[hidden],template{display:none}
+a{background-color:transparent;-webkit-text-decoration-skip:objects}
+a:active,a:hover{outline-width:0}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}
+dfn{font-style:italic}mark{background:#ff0;color:#000}
+small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sub{bottom:-0.25em}sup{top:-0.5em}figure{margin:1em 40px}img{border-style:none}svg:not(:root){overflow:hidden}
+code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}hr{box-sizing:content-box;height:0;overflow:visible}
+button,input,select,textarea{font:inherit;margin:0}optgroup{font-weight:bold}
+button,input{overflow:visible}button,select{text-transform:none}
+button,html [type=button],[type=reset],[type=submit]{-webkit-appearance:button}
+button::-moz-focus-inner, [type=button]::-moz-focus-inner, [type=reset]::-moz-focus-inner, [type=submit]::-moz-focus-inner{border-style:none;padding:0}
+button:-moz-focusring, [type=button]:-moz-focusring, [type=reset]:-moz-focusring, [type=submit]:-moz-focusring{outline:1px dotted ButtonText}
+fieldset{border:1px solid #c0c0c0;margin:0 2px;padding:.35em .625em .75em}
+legend{color:inherit;display:table;max-width:100%;padding:0;white-space:normal}textarea{overflow:auto}
+[type=checkbox],[type=radio]{padding:0}
+[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}
+[type=search]{-webkit-appearance:textfield;outline-offset:-2px}
+[type=search]::-webkit-search-cancel-button,[type=search]::-webkit-search-decoration{-webkit-appearance:none}
+::-webkit-input-placeholder{color:inherit;opacity:0.54}
+::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}
+/* End extract */
+
+/* Base Layout Properties */
+:root {
+  --night-clr  : MidnightBlue;
+  --royal-clr  : RoyalBlue;
+  --indigo-clr : #3f51b5 !important;
+  --main-clr   : Black;
+  --head-clr   : DarkGrey;
+  --hover-clr  : White;
+  --detail-clr : LightGray;
+
+  --main-bg    : White;
+  --detail-bg  : LightGray;
+  --header-bg  : LightSlateGray;
+  --content-bg : WhiteSmoke;
+
+  --line-sml : .75em;
+  --line-med : 1em;
+  --line-mlg : 1.25em;
+  --line-lrg : 1.5em;
+
+  /*
+   *--font-sml : .75em;
+   *--font-med : 1em;
+   *--font-mlg : 1.25em;
+   *--font-lrg : 1.5em;
+   */
+
+  --font-sml : 12px;
+  --font-med : 14px;
+  --font-mlg : 16px;
+  --font-lrg : 18px;
+}
+
+body {
+  width           : 100%;
+  background-color: var(--main-bg);
+  color           : var(--main-clr);
+  padding         : 0;
+  margin          : 0;
+  font-size       : var(--font-med);
+}
+
+h1, h2, h3, h4 {
+  color           : var(--night-clr);
+  font-size       : var(--font-lrg);
+  font-weight     : bold;
+}
+h2, h3 {
+  font-size       : var(--font-mlg);
+  text-decoration : underline;
+}
+h4 {
+  font-size       : var(--font-med);
+}
+
+a, a:active, a:hover, a:visited {
+  padding         : 5px;
+  border          : thin solid transparent;
+  border-radius   : 4px;
+  color           : var(--indigo-clr);
+  background-color: transparent;
+}
+a:active, a:hover {
+  background-color: var(--night-bg);
+  color           : var(--hover-clr);
+  border          : thin solid var(--hover-clr);
+}
+
+header { /* page title section */
+  position        : relative;
+  color           : var(--header-clr);
+  background-color: var(--header-bg);
+  font-size       : var(--font-lrg);
+  padding         : 10px;
+  margin          : 0;
+  line-height     : 30px;
+}
+footer { /* page tail fixed at bottom of screen */
+  position        : fixed;
+  bottom          : -10px;
+  left            : 0;
+  right           : 0;
+  display         : block;
+  color           : inherit;
+  background-color: var(--header-bg);
+  font-size       : var(--font-sml);
+  text-align      : center;
+  line-height     : 1;
+  padding         : 2px;
+}
+
+/* small */
+s, small {
+  font-size       : var(--font-sml);
+  text-decoration : none;
+}
+
+img {
+  border  : 2px var(--header-bg);
+  padding : none;
+  margin  : none;
+  /*vertical-align: bottom;*/
+}
+img a, img a:active, img a:hover, img a:visited {
+  border  : 2px transparent;
+  height  : 100%;
+  width   : 100%;
+  background-color: none;
+  color: none;
+  padding : none;
+  margin  : 2px 20px;
+}
+
+/*
+ * nav menu
+ */
+.topmenu {
+  position        : -webkit-sticky; /* Safari */
+  position        : sticky;
+  z-index         : 99;
+  display         : inline-block;
+  top             : 0;
+  left            : 0;
+  right           : 0;
+  width           : 100%;
+  font-size       : var(--font-mlg);
+  background-color: var(--detail-bg);
+  color           : var(--night-clr);
+  letter-spacing  : 1px;
+  font-family     : "Segoe UI",Arial,sans-serif;
+}
+.topmenu a {
+  padding         : 5px 15px !important;
+  margin-left     : -5px;
+  border          : thin solid transparent;
+  border-right    : thin solid var(--main-clr);
+  border-radius   : 0px;
+  display         : inline-block;
+  font-style      : oblique;
+  text-decoration : none;
+  color           : var(--night-clr);
+  background-color: var(--detail-bg);
+}
+.topmenu a:hover,.topmenu a:focus,.topmenu a.active {
+  border          : thin solid var(--hover-clr);
+  background-color: var(--night-clr) !important;
+  color           : var(--hover-clr) !important;
+}
+
+/*
+ * main content sections
+ */
+section {
+  clear           : both;
+  position        : relative;
+  display         : block;
+  margin          : 20px;
+
+  margin-top      : -30px; /* for #anchor link under menu */
+  padding-top     : 25px;  /* for #anchor link under menu */
+}
+section ul {
+  list-style-type : circle;
+}
+section li {
+  line-height     : 2;
+}
+section a {
+  padding         : 5px !important;
+  color           : var(--night-clr);
+  background-color: var(--main-bg);
+  text-decoration : none;
+}
+section a:active, section a:hover {
+  color           : var(--main-bg);
+  background-color: var(--royal-clr);
+  border          : thin transparent;
+  border-radius   : 4px;
+}
+/* revert "csv" back to initial dataTable/bootstrap formats */
+.csv a, .csv a:active, .csv a:hover, .csv a:visited,
+.csv li {
+  display: inline-table;
+	border: 1px solid #ddd;
+}
+
+#read_count ul {
+  margin-top: -20px; /* make up for relocated indented note */
+}
+
+/*
+ * table-icious
+ * Note: 'rp' and 'b' are overridden within .table
+ * (Shorter tags make me smile.)
+ */
+div.table {
+  display      : table;
+  width        : auto;
+  border-top   : 1px solid var(--main-clr);
+}
+div.table rp {
+  display      : table-row;
+}
+div.table rp b {
+  display      : table-cell;
+  background   : var(--main-bg);
+  padding      : 5px 10px;
+  font-weight  : normal;
+  border-bottom: 1px solid var(--main-clr);
+  border-right : 1px solid var(--main-clr);
+}
+/* header column */
+div.table rp b:first-child {
+  background   : var(--content-bg);
+  font-weight  : 700;
+  border-left  : 1px solid var(--main-clr);
+}
+
+/* misc styles */
+.indented_note { /* note to the right of line above */
+  position     : relative;
+  display      : inline;
+  top          : -2.5em;
+  left         : 10em;
+  font-weight  : normal;
+  font-style   : oblique;
+  padding      : 2px 5px;
+  border-top   : 1px dashed var(--night-clr);
+  border-bottom: 1px dashed var(--night-clr);
+  font-size    : var(--font-sml);
+}
+.indent { margin-left: 2em; }
+.no-border { border: 0px none transparent; }
+.clear { background: transparent; }
+

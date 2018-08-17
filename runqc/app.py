@@ -8,8 +8,8 @@ import config
 
 app = Flask(__name__.split('.')[0],
             # template_folder='./runqc/templates',
-            static_url_path='/static',
-            static_folder='/var/www/html/static',
+            #static_url_path='/static',
+            #static_folder='/var/www/html/static',
             )
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Flask App Config ~~~~~
@@ -49,6 +49,7 @@ def hello():
 @app.route(url_root+'/')
 def run_list():
     """show list of runs"""
+    #TODO: create template; get list of subdirs as run names
     return make_response(render_template('run_list.html'))
 
 # index = run_list
@@ -59,6 +60,7 @@ def run_details(run_path):
     """show main page for each run's qc"""
     #TODO: store variables in generated json file?
     #TODO: store variables in generated db?
+    #TODO: split <run>_QCReport.csv into 'infos.html' and dataTable.csv chunks (sed script? python function?)
 
     # expected run_path name structure:
     #   20180725_18-weinstock-004_CCGN5ANXX_qc/

@@ -1,0 +1,10 @@
+{
+  "dbtype": "mysql",
+  "host": "localhost",
+  "port": "3306",
+  "database": "runqc",
+  "user": "rqcadmin",
+  "password": "<the_secret_password!>",
+  "charset": "utf8mb4",
+  "unix_socket": "True"
+}

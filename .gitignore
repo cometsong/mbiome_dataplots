@@ -59,6 +59,7 @@ tags
 [._]sw[a-p]
 
 # Virtualenv
+venv
 .venv
 .Python
 [Bb]in

@@ -82,3 +82,7 @@ Icon
 # Thumbnails
 ._*
 
+# app and db specific
+db_auth.json
+secret_production.key
+

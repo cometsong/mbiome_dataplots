@@ -20,13 +20,9 @@ run_info = Blueprint('run_info', __name__) #, url_prefix='/runs')
 def run_list():
     """show list of run names."""
     datasets = current_app.config['RUN_DATASETS']
-    # Note: join with dirname of app.instance_path filename to get disk location.
-    # datasets = os.path.join(os.path.dirname(app.instance_path), datasets)
-    if not os.path.isabs(datasets):
-        datasets = os.path.join(current_app.instance_path, datasets)
 
     vars = {
-        # 'url_prefix': datasets,
+        'datasets': datasets,
         'run_dirs': make_tree(datasets),
     }
     # current_app.logger.debug(f'context: {vars!s}')

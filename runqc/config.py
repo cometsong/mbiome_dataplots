@@ -32,11 +32,10 @@ class Config(object):
     SQLALCHEMY_ECHO = "False"
     DB_SCHEMA = get_env("FLASK_DB_SCHEMA", pjoin(root_path, 'dbschema.sql'))
 
-    # TODO: use absolute path of datasets!?
     RUN_DATASETS = get_env("FLASK_APP_RUN_DATASETS", 'runs')
-    # if not RUN_DATASETS.startswith('/'):
-    #     RUN_DATASETS = .... What shall I join it with???
-    #     datasets = pjoin(dirname(app.instance_path), datasets)
+    # if not abspath, join from parent dir of this app:
+    if not os.path.isabs(RUN_DATASETS):
+        RUN_DATASETS = pjoin(dirname(root_path), RUN_DATASETS)
 
 
 class ProductionConfig(Config):

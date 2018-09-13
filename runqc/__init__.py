@@ -86,7 +86,21 @@ def create_app(test_config:dict={}):
     def env_vars():
         from flask import jsonify
         env_items = {k:v for k, v in os.environ.items()}
-        return jsonify(env_items)
+        app_info = {
+                    'name': str(app.name),
+                    'root_path': str(app.root_path),
+                    'blueprints': str(app.blueprints),
+                    'import_name': str(app.import_name),
+                    'instance_path': str(app.instance_path),
+                    'error_handler_spec': str(app.error_handler_spec),
+                   }
+        app_config = {k:str(v) for k, v in app.config.items()}
+
+        return jsonify(
+            env=env_items,
+            app_info=app_info,
+            app_config=app_config,
+            )
 
     return app
 

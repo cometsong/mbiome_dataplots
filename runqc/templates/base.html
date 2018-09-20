@@ -2,31 +2,30 @@
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
-    {% block meta %}{# TODO: can we pull other files into base via super() or extends ??? #}
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="Benjamin Leopold in Microbiome Core at JAXGM" />
-    <link rel="icon" href="/static/images/mu-letter-blue.ico" type="image/x-icon">
+    {% block meta %}
+    {% include "meta.html" ignore missing %}
     {% endblock meta %}
-
     {% block head %}
+    <link rel="icon" href="{{ url_for('static', filename='images/mu-letter-blue.ico') }}" type="image/x-icon">
+    <!--<base href="{{request.url_root}}">-->
+    <base href="{{request.base_url}}">
+
     <!-- third party core -->
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/dataTables.bootstrap.css" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
     <!-- dataTables -->
-    <script src="/static/js/jquery.csv.min.js"></script>
-    <script src="/static/js/jquery.dataTables.min.js"></script>
-    <script src="/static/js/dataTables.bootstrap.js"></script>
-    <script src="/static/js/csv_to_html_table.js"></script>
-    <link href="/static/css/dataTables.bootstrap.css" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/jquery.csv.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dataTables.bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/csv_to_html_table.js') }}"></script>
+    <link href="{{ url_for('static', filename='css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
     <!-- run_qc -->
-    <!--<script src="/static/js/run_qc_info.js"></script>-->
-    <link href="/static/css/run_qc_info.css" rel="stylesheet" type="text/css" media="screen"/>
+    <!--<script src="{{ url_for('static', filename='js/run_qc_info.js') }}"></script>-->
+    <link href="{{ url_for('static', filename='css/run_qc_info.css') }}" rel="stylesheet" type="text/css" media="screen"/>
     {% endblock head %}
 
     <title>{% block title %}Mbiome Core Sequencer Run QC{% endblock title %}</title>
@@ -46,6 +45,12 @@
       <a href="#read_count" >Read Count Spreadsheet</a>
       <a href="#run_metric" >Run Metrics <s>(GT)</s></a>
       <a href="#qcreport"   >Sample QC Report <s>(GT)</s></a>
+      <!--<a href="{{run_path}}/#run_info"   >Run Info</a>-->
+      <!--<a href="{{run_path}}/#fastqc"     >FastQC</a>-->
+      <!--<a href="{{run_path}}/#read_dist"  >Read Distribution</a>-->
+      <!--<a href="{{run_path}}/#read_count" >Read Count Spreadsheet</a>-->
+      <!--<a href="{{run_path}}/#run_metric" >Run Metrics <s>(GT)</s></a>-->
+      <!--<a href="{{run_path}}/#qcreport"   >Sample QC Report <s>(GT)</s></a>-->
     </nav>
     {% endblock topmenu %}
 

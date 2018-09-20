@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+<title>{% block title %}Run FastQC: {{run_name}}{% endblock title %}</title>
+
+<header>
+  {% block header %}
+  {{ super() }}
+  QC Info for "{{run_name}}"
+  <s><a href="{{ url_for('.run_details', run_path=run_path) }}" class="indent strong">Back to this Run's QC</a></s>
+  <s><a href="{{ url_for('.run_list') }}" class="indent strong">Up to Run QC List</a></s>
+  {% endblock header %}
+</header>
+
+{% block topmenu %}{% endblock topmenu %}
+
+{% block content %}
+<!--<section id="fastqc">-->
+<!--  <h2>FastQC</h2>-->
+<!--  <ul>-->
+<!--    <li><a href="{# url_for('.fastqc_list', run_path=run_path, subitem="all") #}">Browse complete FastQC directory/</a></li>-->
+<!--  </ul>-->
+<!--</section>-->
+
+<section id="fastqc_results">
+  <h2>FastQC Result List</h2>
+  <ul>
+  {%- for fqc_name, fqc_href in fastqc_files.items()|sort -%}
+    <li><a href="{{ url_for('.fastqc_list', run_path=run_path, subitem=fqc_href) }}">{{fqc_name}}</a></li>
+  {%- endfor -%}
+  </ul>
+</section>
+{% endblock content %}

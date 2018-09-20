@@ -1,23 +1,18 @@
 {% extends "base.html" %}
-<title>{% block title %}{% endblock %} List</title>
+<title>{% block title %}{{ super() }} List{% endblock %}</title>
 <header>
   {% block header %} {{ super() }} List {% endblock header %}
 </header>
 
-{% block topmenu %}
-<script>
-  $(document).ready(function(){
-    $('.topmenu>a').addClass('disabled small');
-  });
-</script>
-{{ super() }}{# is super needed here? or better to omit it? #}
-{% endblock topmenu %}
+{% block topmenu %}{% endblock topmenu %}
 
 {% block content %}
-<section id="run_info">
+<section id="run_list">
   <h2>Run Folders:</h2>
   <ul>
-    <li>List of runs will go here....</li>
+  {%- for run_name, run_href in run_dirs.items()|sort(reverse=True) -%}
+    <li><a href="{{run_href}}">{{run_name}}</a></li>
+  {%- endfor -%}
   </ul>
 </section>
 {% endblock content %}

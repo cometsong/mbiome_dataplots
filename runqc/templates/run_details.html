@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-<title>{% block title %}{{ super() }} - {{ run_name }}{% endblock title %}</title>
+<title>{% block title %}RunQC: {{run_name }}{% endblock title %}</title>
 
 <header>
   {% block header %}
   {{ super() }}
-  QC Info for "{{ run_name }}"
-  <s><a href="{{ url_for('run_list') }}" class="clear no-border indent">Up to Run QC List</a></s>
+  QC Info for "{{run_name}}"
+  <s><a href="{{ url_for('.run_list') }}" class="indent strong">Up to Run QC List</a></s>
   {% endblock header %}
 </header>
 
@@ -13,34 +13,43 @@
 <section id="run_info">
   <h2>Run Info</h2>
   <div class="table indent" id="infos">
-    <script>$("#infos").load("{{ gt_project }}_QCreport.infos.html");</script>
+    {% for key,val in run_spec.items() %}
+    <rp><b>{{key}}</b><b>{{val}}</b></rp>
+    {% endfor %}
   </div>
 </section>
 
 <section id="fastqc">
   <h2>FastQC</h2>
   <ul>
-    <li><a href="fastqc.html">View list of FastQC pages for samples and read directions</a></li>
-    <li><a href="fastqc/">Browse FastQC directory/</a></li>
+    <li><a href="fastqc">list of FastQC results</a></li>
   </ul>
 </section>
 
 <section id="read_dist">
   <h2>Read Distribution</h2>
-  <img src="{{ run_name }}_LANE-001_Read_Distributions.png"
+  {% if read_dist_exists %}
+  <img src="{{run_name}}_LANE-001_Read_Distributions.png"
        alt="Plot of read distribution is not found" ><br/>
-       <a href="{{ run_name }}_LANE-001_Read_Distributions.png" download>
-         <s>[Download above plot]</s></a>
+  <a href="{{run_name}}_LANE-001_Read_Distributions.png" download>
+  <s>[Download read distribution plot]</s></a>
+  {% else %}
+  <b class="indented_note">Graph pending.</b>
+  {% endif %}
 </section>
 
 <section id="read_count">
   <h2>Read Count</h2>
+  {% if read_count_exists %}
   <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
   <ul>
     <li>
-      <a href="{{ run_name }}_Samples_Read_Counts.xls">Download spreadsheet with sample total read counts</a>
+      <a href="{{run_name}}_Samples_Read_Counts.xls" download>Download spreadsheet with sample total read counts</a>
     </li>
   </ul>
+  {% else %}
+  <b class="indented_note">Spreadsheet pending.</b>
+  {% endif %}
 </section>
 
 <section id="run_metric">
@@ -48,7 +57,7 @@
   <div class="csv" id="run_metric_csv"></div>
   <script>
     CsvToHtmlTable.init({
-      csv_path: 'Run_Metric_Summary_{{ gt_project }}.csv',
+      csv_path: 'Run_Metric_Summary_{{gt_project}}.csv',
       element: 'run_metric_csv',
       allow_download: true,
       csv_options: {separator: ',', delimiter: '"'},
@@ -71,7 +80,7 @@
   <div class="csv" id="qcreport_csv"></div>
   <script>
     CsvToHtmlTable.init({
-      csv_path: '{{ gt_project }}_QCreport.table.csv',
+      csv_path: '{{gt_project}}_QCreport.data.csv',
       element: 'qcreport_csv',
       allow_download: true,
       csv_options: {separator: ',', delimiter: '"'},
@@ -88,4 +97,4 @@
     });
   </script>
 </section>
-{% endblock %}
+{% endblock content %}

@@ -247,7 +247,7 @@ div.table rp b:first-child {
   position     : relative;
   display      : inline;
   top          : -2.5em;
-  left         : 10em;
+  left         : 12em;
   font-weight  : normal;
   font-style   : oblique;
   padding      : 2px 5px;
@@ -258,4 +258,4 @@ div.table rp b:first-child {
 .indent { margin-left: 2em; }
 .no-border { border: 0px none transparent; }
 .clear { background: transparent; }
-
+.strong { font-weight:bold; }

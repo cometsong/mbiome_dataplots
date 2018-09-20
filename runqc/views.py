@@ -164,20 +164,11 @@ def run_details(run_path, subitem=''):
 def fastqc_list(run_path, subitem='files'):
     """show list of links to run's fastqc html files"""
     fastqc_path = 'fastqc'
-    subitem_options = ('files', 'complete', 'all')
-    list_style = 'files' # default show only the html files
 
     datasets = current_app.config['RUN_DATASETS']
-    # data_dir = os.path.dirname(datasets) 
     url_root = current_app.config['APPLICATION_ROOT']
     fqc_abspath = os.path.join(datasets, str(run_path), fastqc_path)
     fqc_urlpath = os.path.join(str(run_path), fastqc_path)
-
-    if subitem not in subitem_options:
-        list_style = 'files' # default show only the html files
-    else:
-        list_style = subitem
-    list_style = 'files' # temp hack
 
     if subitem.endswith('.html'):
         return send_from_directory(fqc_abspath, subitem, as_attachment=False)
@@ -192,11 +183,11 @@ def fastqc_list(run_path, subitem='files'):
             (key, path) = item.popitem()
             base = os.path.basename(path)
             name = base
-            # if list_style == 'files':
-            if not name.endswith('.html'):
-                next
-            name = name.rstrip('.html')
             href = base
+            if not name.endswith('.html'):
+                continue
+            name = name.rstrip('.html')
+            name = name.rstrip('_fastqc')
             fastqc_files.update({name: href})
     except Exception as e:
         current_app.logger.error('List of fastqc files issues: %s', run_path)

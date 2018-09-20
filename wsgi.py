@@ -9,7 +9,7 @@ import sys
 sys.stdout = sys.stderr
 
 # virtualenv dir variables
-app_root = os.path.abspath(os.path.curdir)
+app_root = os.path.abspath(os.path.dirname(__file__))
 dirs = OrderedDict(
     sitepkgs = pjoin(app_root, 'venv', 'lib/python3.6/site-packages'),
     venv_bin = pjoin(app_root, 'venv', 'bin'),
@@ -31,7 +31,9 @@ os.environ["FLASK_ENV"] = 'production'
 os.environ["FLASK_DEBUG"] = 'False'
 
 # check dirname for devel instance
-if app_root.endswith('devel'):
+print(f'app_root: {app_root}')
+if 'devel' in app_root:
+    os.environ["FLASK_APP_ROOT"] = '/run_qc_devel'
     os.environ["FLASK_ENV"] = 'development'
     os.environ["FLASK_DEBUG"] = 'True'
 

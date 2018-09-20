@@ -102,5 +102,29 @@ def create_app(test_config:dict={}):
             app_config=app_config,
             )
 
+
+    # catch all unknown and yucky URIs
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def catch_all(path):
+        """catch all for misformed and mistaken URIs"""
+        if path.endswith('/'):
+            pathtype = 'folder'
+            # return handle_folder(path)
+        else:
+            pathtype = 'file'
+            # return handle_file(path)
+
+        msg = f'This page must be somewhere else...<br/><br/>'
+        msg += f'you wanted to get to the "{pathtype}" path:<br/>(/{path!s})'
+        styled = f'<p style="font-size:x-large;width:100%;text-align:center;">{msg}</p>'
+        vars = {
+            'msg': msg,
+            'path': path,
+        }
+        # return render_template('default.html', **vars)
+        return styled
+
+
     return app
 

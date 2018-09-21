@@ -191,6 +191,11 @@ section ul {
 section li {
   line-height     : 2;
 }
+section img {
+  padding         : 5px !important;
+  margin-left     : 25px !important;
+  border          : thin solid var(--night-clr) !important;
+}
 section a {
   padding         : 5px !important;
   color           : var(--night-clr);
@@ -255,6 +260,11 @@ div.table rp b:first-child {
   border-bottom: 1px dashed var(--night-clr);
   font-size    : var(--font-sml);
 }
+.indented_note a {
+  border       : 0px !important;
+  padding      : 2px !important;
+}
+
 .indent { margin-left: 2em; }
 .no-border { border: 0px none transparent; }
 .clear { background: transparent; }

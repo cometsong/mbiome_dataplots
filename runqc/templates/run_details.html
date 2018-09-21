@@ -15,6 +15,8 @@
   <div class="table indent" id="infos">
     {% for key,val in run_spec.items() %}
     <rp><b>{{key}}</b><b>{{val}}</b></rp>
+    {% else %}
+    <rp><b><em>No Run Info Found</em></b></rp>
     {% endfor %}
   </div>
 </section>
@@ -34,7 +36,7 @@
       [Download read distribution plot]</a>
   </b><br/>
   <img src="{{run_name}}_LANE-001_Read_Distributions.png"
-       alt="Plot of read distribution is not found" ><br/>
+       alt="Plot of samples' read distribution" ><br/>
 </section>
 {% endif %}
 

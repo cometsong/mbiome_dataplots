@@ -26,31 +26,29 @@
   </ul>
 </section>
 
+{% if read_dist_exists %}
 <section id="read_dist">
   <h2>Read Distribution</h2>
-  {% if read_dist_exists %}
+  <b class="indented_note strong">
+    <a href="{{run_name}}_LANE-001_Read_Distributions.png" download>
+      [Download read distribution plot]</a>
+  </b><br/>
   <img src="{{run_name}}_LANE-001_Read_Distributions.png"
        alt="Plot of read distribution is not found" ><br/>
-  <a href="{{run_name}}_LANE-001_Read_Distributions.png" download>
-  <s>[Download read distribution plot]</s></a>
-  {% else %}
-  <b class="indented_note">Graph pending.</b>
-  {% endif %}
 </section>
+{% endif %}
 
+{% if read_count_exists %}
 <section id="read_count">
   <h2>Read Count</h2>
-  {% if read_count_exists %}
   <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
   <ul>
     <li>
       <a href="{{run_name}}_Samples_Read_Counts.xls" download>Download spreadsheet with sample total read counts</a>
     </li>
   </ul>
-  {% else %}
-  <b class="indented_note">Spreadsheet pending.</b>
-  {% endif %}
 </section>
+{% endif %}
 
 <section id="run_metric">
   <h2>Run Metrics</h2>

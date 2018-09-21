@@ -41,16 +41,14 @@
     <nav class="topmenu">
       <a href="#run_info"   >Run Info</a>
       <a href="#fastqc"     >FastQC</a>
+    {% if read_dist_exists %}
       <a href="#read_dist"  >Read Distribution</a>
+    {% endif %}
+    {% if read_count_exists %}
       <a href="#read_count" >Read Count Spreadsheet</a>
+    {% endif %}
       <a href="#run_metric" >Run Metrics <s>(GT)</s></a>
       <a href="#qcreport"   >Sample QC Report <s>(GT)</s></a>
-      <!--<a href="{{run_path}}/#run_info"   >Run Info</a>-->
-      <!--<a href="{{run_path}}/#fastqc"     >FastQC</a>-->
-      <!--<a href="{{run_path}}/#read_dist"  >Read Distribution</a>-->
-      <!--<a href="{{run_path}}/#read_count" >Read Count Spreadsheet</a>-->
-      <!--<a href="{{run_path}}/#run_metric" >Run Metrics <s>(GT)</s></a>-->
-      <!--<a href="{{run_path}}/#qcreport"   >Sample QC Report <s>(GT)</s></a>-->
     </nav>
     {% endblock topmenu %}
 

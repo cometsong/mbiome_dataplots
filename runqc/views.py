@@ -9,7 +9,7 @@ from runqc.utils import \
     get_run_json, \
     make_json_from_qc_files, \
     get_run_qcreport_data, \
-    check_file_exists, \
+    get_file_paths, \
     parse_run_name_qc
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Routes and Views ~~~~~
@@ -65,26 +65,18 @@ def run_details(run_path, subitem=''):
         if subitem:
             if subitem.endswith('/'):
                 pathtype = 'folder'
-                current_app.logger.debug('subitem type: %s', pathtype)
-                # return handle_folder(path)
+                # current_app.logger.debug('subitem type: %s', pathtype)
+                # TODO: check existence of folder before servinf empty template!
             else:
                 pathtype = 'file'
-                current_app.logger.debug('subitem type: %s', pathtype)
-                # return handle_file(path)
+                # current_app.logger.debug('subitem type: %s', pathtype)
 
-                # suffixes_not_attachment = ( '.png', '.jeg', '.csv' )
-                suffixes_as_attachment = ('.xlsx', '.xls', '.csv')
                 # current_app.logger.debug('checking subitem suffix: %s %s', run_path, subitem)
+                suffixes_as_attachment = ('.xlsx', '.xls', '.csv')
+                # suffixes_not_attachment = ( '.png', '.jeg', '.csv' )
+                attach = False
                 if subitem.endswith(suffixes_as_attachment):
                     attach = True
-                else:
-                    attach = False
-                return send_from_directory(run_abspath, subitem,
-                                           as_attachment=attach)
-                if subitem.endswith(suffixes_as_attachment):
-                    attach = True
-                else:
-                    attach = False
                 return send_from_directory(run_abspath, subitem,
                                            as_attachment=attach)
 
@@ -135,8 +127,8 @@ def run_details(run_path, subitem=''):
             raise e
 
         # check if files being linked to exist (yet)
-        read_count_exists = check_file_exists(run_abspath, '*_Samples_Read_Counts.xls*')
-        read_dist_exists = check_file_exists(run_abspath, '*_Read_Distributions.png')
+        read_count_sheets = get_file_paths(run_abspath, '*_Samples_Read_Count.xls*', name_only=True)
+        read_dist_images = get_file_paths(run_abspath, '*_Read_Distributions.png', name_only=True)
 
     except Exception as e:
         raise e
@@ -148,8 +140,8 @@ def run_details(run_path, subitem=''):
         'run_name': run_name,
         'gt_project': gt_project,
         'qcreport_data': qcreport_data,
-        'read_count_exists': read_count_exists,
-        'read_dist_exists': read_dist_exists,
+        'read_count_sheets': read_count_sheets,
+        'read_dist_images': read_dist_images,
     }
     # current_app.logger.debug('context: %s', vars)
     response = make_response(render_template('run_details.html', **vars))

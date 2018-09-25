@@ -28,26 +28,25 @@
   </ul>
 </section>
 
-{% if read_dist_exists %}
+{% if read_dist_images %}
 <section id="read_dist">
   <h2>Read Distribution</h2>
-  <b class="indented_note strong">
-    <a href="{{run_name}}_LANE-001_Read_Distributions.png" download>
-      [Download read distribution plot]</a>
-  </b><br/>
-  <img src="{{run_name}}_LANE-001_Read_Distributions.png"
-       alt="Plot of samples' read distribution" ><br/>
+  {% for image in read_dist_images %}
+  <a href="{{image}}" class="img" download><img src="{{image}}" alt="Plot {{image}}" ></a>
+  {% endfor %}
 </section>
 {% endif %}
 
-{% if read_count_exists %}
+{% if read_count_sheets %}
 <section id="read_count">
   <h2>Read Count</h2>
   <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
   <ul>
+    {% for sheet in read_count_sheets %}
     <li>
-      <a href="{{run_name}}_Samples_Read_Counts.xls" download>Download spreadsheet with sample total read counts</a>
+      <a href="{{sheet}}" download>Download spreadsheet "{{sheet}}"</a>
     </li>
+    {% endfor %}
   </ul>
 </section>
 {% endif %}

@@ -222,6 +222,24 @@ def make_json_from_qc_files(dirname: str, json_filename: str):
     return info_dict
 
 
+def get_file_paths(folder, fileglob="*", name_only=False):
+    """pre-check if file(s) exist(s) and return list of Path objects or filenames only"""
+    fldr = Path(folder)
+    files = []
+    try:
+        for f in fldr.glob(fileglob):
+            current_app.logger.info('get_file_paths dir glob name: %s', f)
+            if f.is_file():
+                if name_only:
+                    files.append(f.name)
+                else:
+                    files.append(f)
+        # current_app.logger.debug('get_file_paths files: %s', str(files))
+        return files
+    except:
+        return False
+
+
 def check_file_exists(folder, fileglob="*"):
     """pre-check if file(s) exist(s) for links in view templates"""
     fldr = Path(folder)

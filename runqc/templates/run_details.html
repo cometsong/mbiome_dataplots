@@ -96,4 +96,18 @@
     });
   </script>
 </section>
+
+{% if pipeline_16S_qc_plots %}
+<section id="pipe_16S">
+  <h2>Pipeline 16S<br/>Read Counts</h2>
+  <b class="indented_note">Shown in these plots is number of reads to start and left after each step of the 16S pipeline.</b>
+  {% autoescape false %}
+    {% for plotname, plot in pipeline_16S_qc_plots.items() %}
+      <h5><a href="{{plotname}}.csv" download>{{plotname}}</a></h5>
+      {{plot}}
+    {% endfor %}
+  {% endautoescape %}
+</section>
+{% endif %}
+
 {% endblock content %}

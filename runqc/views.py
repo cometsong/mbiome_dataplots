@@ -4,6 +4,7 @@ from pathlib import PosixPath as Path
 from flask import Blueprint, current_app, json
 from flask import make_response, render_template, redirect, request, send_from_directory
 
+from runqc.pipe_qc_plots import plot_16S_read_counts
 from runqc.utils import \
     make_tree, \
     get_run_json, \
@@ -130,6 +131,12 @@ def run_details(run_path, subitem=''):
         read_count_sheets = get_file_paths(run_abspath, '*_Samples_Read_Count.xls*', name_only=True)
         read_dist_images = get_file_paths(run_abspath, '*_Read_Distributions.png', name_only=True)
 
+        try:
+            pipeline_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
+        except Exception as e:
+            current_app.logger.error('issues plotting bar charts for run: %s', run_path)
+            raise e
+
     except Exception as e:
         raise e
 
@@ -142,6 +149,7 @@ def run_details(run_path, subitem=''):
         'qcreport_data': qcreport_data,
         'read_count_sheets': read_count_sheets,
         'read_dist_images': read_dist_images,
+        'pipeline_16S_qc_plots': pipeline_16S_qc_plots,
     }
     # current_app.logger.debug('context: %s', vars)
     response = make_response(render_template('run_details.html', **vars))

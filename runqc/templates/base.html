@@ -49,6 +49,9 @@
     {% endif %}
       <a href="#run_metric" >Run Metrics <s>(GT)</s></a>
       <a href="#qcreport"   >Sample QC Report <s>(GT)</s></a>
+    {% if pipeline_16S_qc_plots %}
+      <a href="#pipe_16S"   >Read Counts from 16S pipeline</a>
+    {% endif %}
     </nav>
     {% endblock topmenu %}
 

@@ -118,9 +118,9 @@ def make_layout(title='', bgcolor='aliceblue', fontsize=12):
             font = dict(size=fontsize),
             plot_bgcolor = bgcolor,
             title = title,
+            autosize = True,
             hidesources = True,
             hovermode = 'y',
-            clickmode = 'event+select',
             dragmode = 'pan',
             showlegend = True,
             legend = layout_legend,
@@ -146,7 +146,7 @@ def plot_bar_chart(fp, df):
         # log.debug('bar_chart: image: %s, file: %s', image_name, file_name)
 
         try:
-            log.debug('bar_chart: gonna set layout vars')
+            log.debug('bar_chart: gonna set display vars')
 
             colors = [
                 'darkcyan', 'chocolate', 'darkmagenta',
@@ -156,7 +156,7 @@ def plot_bar_chart(fp, df):
             marker_line = {'color': 'black',
                            'width': 1 }
         except Exception as e:
-            log.error('bar_chart: layout variables NOT set')
+            log.error('bar_chart: display variables NOT set')
             raise e
 
         try:
@@ -164,19 +164,22 @@ def plot_bar_chart(fp, df):
             layout = make_layout()
 
             log.debug('bar_chart: gonna modify layout specs')
+            layout.barmode = 'overlay'
+
             layout_title = ''.join([
                 '<a href="', fp.name, '".csv" class="strong" download>'
                 'Project ', parse_project_name(fp.stem), ' Read Counts',
                 '</a>'
             ])
-            layout['title'] = layout_title
+            layout.title = layout_title
 
             # height = number of records plus top and bottom margins
             plot_height = df.index.size * 25 \
-                          + layout_margins['t'] \
-                          + layout_margins['b']
-            layout['height'] = plot_height
+                          + layout.margin['t'] \
+                          + layout.margin['b']
+            layout.height = plot_height
 
+            log.debug('bar_chart: gonna modify layout spec: xaxis')
             layout.xaxis.update(dict(
                 # title = 'Number of Reads',
                 ticksuffix = ' reads',
@@ -184,6 +187,7 @@ def plot_bar_chart(fp, df):
                 side = 'top',
             ))
 
+            log.debug('bar_chart: gonna modify layout spec: yaxis')
             text_max_len = 40
             y_ticktexts = []
             for n in df.index:
@@ -201,13 +205,13 @@ def plot_bar_chart(fp, df):
             ))
 
             log.debug('bar_chart: layout variables set')
-            log.debug('bar_chart: layout: %s', str(layout))
+            # log.debug('bar_chart: layout: %s', str(layout))
         except Exception as e:
             log.error('bar_chart: layout NOT made')
             raise e
 
         try:
-            log.debug('bar_chart: gonna make data')
+            log.debug('bar_chart: gonna make data traces')
             data = []
             for i in range(df.columns.size):
                 colname = df.columns[i]
@@ -216,7 +220,6 @@ def plot_bar_chart(fp, df):
                     orientation = 'h',
                     name = colname,
                     hoverinfo = "x+name",
-                    hoverlabel = {'bgcolor': 'white'},  # TODO: hoverlabel bg?
                     marker = {'color': colors[i],
                               'line': marker_line},
                     x = df[colname],
@@ -235,7 +238,7 @@ def plot_bar_chart(fp, df):
                 data.append(bar)
             # log.debug('bar_chart: data: %s', str(data))
         except Exception as e:
-            log.error('bar_chart: data NOT made')
+            log.error('bar_chart: data traces NOT made')
             raise e
 
         try:
@@ -249,12 +252,14 @@ def plot_bar_chart(fp, df):
 
         try:
             log.debug('bar_chart: gonna make plot')
-            plotly_config['modeBarButtonsToRemove'] = ['toggleSpikelines', 'sendDataToCloud', ]
+            plotly_config['modeBarButtonsToRemove'] = ['toggleSpikelines',
+                                                       # 'sendDataToCloud',
+                                                       'lasso']
 
             plot = ply.plot(fig,
                             auto_open = False,
                             image = 'svg',
-                            image_height = '100%',
+                            # image_height = '100%',
                             output_type = 'div',
                             image_filename = image_name,
                             filename = file_name,

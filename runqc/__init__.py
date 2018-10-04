@@ -1,5 +1,5 @@
 # __all__ = ['app', 'config', 'views', 'db', 'models', 'files']
-__version_bits__ = (1, 0, 1)
+__version_bits__ = (1, 1, 0)
 __version__ = ".".join(map(str,__version_bits__))
 
 import os

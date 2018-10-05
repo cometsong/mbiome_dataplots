@@ -1,8 +1,8 @@
 import sys
 import os
-from os.path import abspath, join as pjoin, curdir, dirname, isdir
+from os.path import abspath, join as pjoin, dirname, isdir
 
-root_path = abspath(dirname(__file__))
+root_path = abspath(dirname(__file__)) # bc this is pre-existence of 'app.root_path'
 
 
 def get_env(varname, default=None):

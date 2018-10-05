@@ -11,7 +11,7 @@
   <h2>Run Folders:</h2>
   <ul>
   {%- for run_name, run_href in run_dirs.items()|sort(reverse=True) -%}
-    <li><a href="{{run_href}}">{{run_name}}</a></li>
+    <li><a class="large" href="{{run_href}}">{{run_name}}</a></li>
   {%- endfor -%}
   </ul>
 </section>

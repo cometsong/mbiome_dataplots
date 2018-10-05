@@ -1,5 +1,5 @@
 # __all__ = ['app', 'config', 'views', 'db', 'models', 'files']
-__version_bits__ = (1, 1, 0)
+__version_bits__ = (1, 1, 2)
 __version__ = ".".join(map(str,__version_bits__))
 
 import os
@@ -76,10 +76,17 @@ def create_app(test_config:dict={}):
 
     # configure_extensions(app)
 
+    #TODO: implement error_handlers (e.g. 404)
+    # @app.errorhandler(404)
+    # def page_not_found(e):
+    #     # your processing here
+    #     return result
+
     # a simple page that says hello
     @app.route('/hello')
     def hello():
         return 'Hello, World!'
+
 
     # show environ vars
     @app.route('/environ')

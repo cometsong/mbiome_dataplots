@@ -26,80 +26,79 @@ legend{color:inherit;display:table;max-width:100%;padding:0;white-space:normal}t
 
 /* Base Layout Properties */
 :root {
-  --night-clr  : MidnightBlue;
-  --royal-clr  : RoyalBlue;
-  --indigo-clr : #3f51b5 !important;
-  --main-clr   : Black;
-  --head-clr   : DarkGrey;
-  --hover-clr  : White;
-  --detail-clr : LightGray;
+  --clr-night  : MidnightBlue;
+  --clr-royal  : RoyalBlue;
+  --clr-indigo : #3f51b5;
+  --clr-main   : Black;
+  --clr-head   : DarkGrey;
+  --clr-hover  : White;
+  --clr-detail : LightGray;
 
-  --main-bg    : White;
-  --detail-bg  : LightGray;
-  --header-bg  : LightSlateGray;
-  --content-bg : WhiteSmoke;
+  --bgr-main    : White;
+  --bgr-detail  : LightGray;
+  --bgr-header  : LightSlateGray;
+  --bgr-content : WhiteSmoke;
 
-  --line-sml : .75em;
-  --line-med : 1em;
-  --line-mlg : 1.25em;
-  --line-lrg : 1.5em;
+  --xx-small : 0.60em;
+  --x-small  : 0.95em;
+  --small    : 1.10em;
+  --med-sml  : 1.25em;
+  --medium   : 1.35em;
+  --med-lrg  : 1.45em;
+  --large    : 1.55em;
+  --x-large  : 1.70em;
+  --xx-large : 1.95em;
 
-  /*
-   *--font-sml : .75em;
-   *--font-med : 1em;
-   *--font-mlg : 1.25em;
-   *--font-lrg : 1.5em;
-   */
-
-  --font-sml : 12px;
-  --font-med : 14px;
-  --font-mlg : 16px;
-  --font-lrg : 18px;
 }
 
 body {
   width           : 100%;
-  background-color: var(--main-bg);
-  color           : var(--main-clr);
+  background-color: var(--bgr-main);
+  color           : var(--clr-main);
   padding         : 0;
   margin          : 0;
-  font-size       : var(--font-med);
+  font-size       : var(--medium);
 }
 
 h1, h2, h3, h4 {
-  color           : var(--night-clr);
-  font-size       : var(--font-lrg);
+  color           : var(--clr-night);
+  font-size       : var(--med-lrg);
   font-weight     : bold;
 }
 h2, h3 {
-  font-size       : var(--font-mlg);
+  font-size       : var(--med-lrg);
   text-decoration : underline;
 }
 h4 {
-  font-size       : var(--font-med);
+  font-size       : var(--medium);
+}
+
+h5 a {
+  border          : 2px solid var(--bgr-header);
+  border-radius   : 8px;
 }
 
 a, a:active, a:hover, a:visited {
   padding         : 5px;
   border          : thin solid transparent;
   border-radius   : 4px;
-  color           : var(--indigo-clr);
+  color           : var(--clr-indigo);
   background-color: transparent;
 }
 a:active, a:hover {
-  background-color: var(--night-bg);
-  color           : var(--hover-clr);
-  border          : thin solid var(--hover-clr);
+  background-color: var(--bgr-night);
+  color           : var(--clr-hover);
+  border          : thin solid var(--clr-hover);
 }
 
 header { /* page title section */
   position        : relative;
-  color           : var(--header-clr);
-  background-color: var(--header-bg);
-  font-size       : var(--font-lrg);
+  color           : var(--clr-header);
+  background-color: var(--bgr-header);
+  font-size       : var(--large);
   padding         : 10px;
   margin          : 0;
-  line-height     : 30px;
+  line-height     : 1em;
 }
 footer { /* page tail fixed at bottom of screen */
   position        : fixed;
@@ -108,33 +107,11 @@ footer { /* page tail fixed at bottom of screen */
   right           : 0;
   display         : block;
   color           : inherit;
-  background-color: var(--header-bg);
-  font-size       : var(--font-sml);
+  background-color: var(--bgr-header);
+  font-size       : var(--x-small);
   text-align      : center;
   line-height     : 1;
   padding         : 2px;
-}
-
-/* small */
-s, small {
-  font-size       : var(--font-sml);
-  text-decoration : none;
-}
-
-img {
-  border  : 2px var(--header-bg);
-  padding : none;
-  margin  : none;
-  /*vertical-align: bottom;*/
-}
-img a, img a:active, img a:hover, img a:visited {
-  border  : 2px transparent;
-  height  : 100%;
-  width   : 100%;
-  background-color: none;
-  color: none;
-  padding : none;
-  margin  : 2px 20px;
 }
 
 /*
@@ -149,28 +126,28 @@ img a, img a:active, img a:hover, img a:visited {
   left            : 0;
   right           : 0;
   width           : 100%;
-  font-size       : var(--font-mlg);
-  background-color: var(--detail-bg);
-  color           : var(--night-clr);
+  font-size       : var(--medium);
+  background-color: var(--bgr-detail);
+  color           : var(--clr-night);
   letter-spacing  : 1px;
   font-family     : "Segoe UI",Arial,sans-serif;
 }
 .topmenu a {
-  padding         : 5px 15px !important;
+  padding         : 5px 15px;
   margin-left     : -5px;
   border          : thin solid transparent;
-  border-right    : thin solid var(--main-clr);
+  border-right    : thin solid var(--clr-main);
   border-radius   : 0px;
   display         : inline-block;
   font-style      : oblique;
   text-decoration : none;
-  color           : var(--night-clr);
-  background-color: var(--detail-bg);
+  color           : var(--clr-night);
+  background-color: var(--bgr-detail);
 }
 .topmenu a:hover,.topmenu a:focus,.topmenu a.active {
-  border          : thin solid var(--hover-clr);
-  background-color: var(--night-clr) !important;
-  color           : var(--hover-clr) !important;
+  border          : thin solid var(--clr-hover);
+  background-color: var(--clr-night);
+  color           : var(--clr-hover);
 }
 
 /*
@@ -191,23 +168,42 @@ section ul {
 section li {
   line-height     : 2;
 }
-section img {
-  padding         : 5px !important;
-  margin-left     : 25px !important;
-  border          : thin solid var(--night-clr) !important;
-}
 section a {
-  padding         : 5px !important;
-  color           : var(--night-clr);
-  background-color: var(--main-bg);
+  padding         : 5px;
+  color           : var(--clr-night);
+  background-color: var(--bgr-main);
   text-decoration : none;
 }
 section a:active, section a:hover {
-  color           : var(--main-bg);
-  background-color: var(--royal-clr);
+  color           : var(--bgr-main);
+  background-color: var(--clr-royal);
   border          : thin transparent;
   border-radius   : 4px;
 }
+section img {
+  border  : 3px solid var(--bgr-header);
+  padding : 1px;
+  margin  : 5px;
+}
+section img:hover {
+  border  : 4px solid var(--clr-royal);
+  padding : 0px;
+}
+section a.img, a.img:active, a.img:hover, a.img:visited {
+  border           : transparent;
+  background-color : transparent;
+  color            : transparent;
+  padding          : 0px;
+  margin           : 0px;
+}
+
+/* responsiveness */
+@media (max-width: 840px) {
+  section img {
+    width: 95%;
+  }
+}
+
 /* revert "csv" back to initial dataTable/bootstrap formats */
 .csv a, .csv a:active, .csv a:hover, .csv a:visited,
 .csv li {
@@ -227,45 +223,50 @@ section a:active, section a:hover {
 div.table {
   display      : table;
   width        : auto;
-  border-top   : 1px solid var(--main-clr);
+  border-top   : 1px solid var(--clr-main);
 }
 div.table rp {
   display      : table-row;
 }
 div.table rp b {
   display      : table-cell;
-  background   : var(--main-bg);
+  background   : var(--bgr-main);
   padding      : 5px 10px;
   font-weight  : normal;
-  border-bottom: 1px solid var(--main-clr);
-  border-right : 1px solid var(--main-clr);
+  border-bottom: 1px solid var(--clr-main);
+  border-right : 1px solid var(--clr-main);
 }
 /* header column */
 div.table rp b:first-child {
-  background   : var(--content-bg);
+  background   : var(--bgr-content);
   font-weight  : 700;
-  border-left  : 1px solid var(--main-clr);
+  border-left  : 1px solid var(--clr-main);
 }
 
 /* misc styles */
 .indented_note { /* note to the right of line above */
   position     : relative;
   display      : inline;
-  top          : -2.5em;
-  left         : 12em;
+  top          : -2.1em;
+  left         : 10em;
   font-weight  : normal;
   font-style   : oblique;
   padding      : 2px 5px;
-  border-top   : 1px dashed var(--night-clr);
-  border-bottom: 1px dashed var(--night-clr);
-  font-size    : var(--font-sml);
+  border-top   : 1px dashed var(--clr-night);
+  border-bottom: 1px dashed var(--clr-night);
+  font-size    : var(--x-small);
 }
 .indented_note a {
-  border       : 0px !important;
-  padding      : 2px !important;
+  border       : 0px;
+  padding      : 2px;
 }
 
-.indent { margin-left: 2em; }
+s, small {
+  font-size       : var(--xx-small);
+  text-decoration : none;
+}
+.large     { font-size: larger; }
+.indent    { margin-left: 2em; }
 .no-border { border: 0px none transparent; }
-.clear { background: transparent; }
-.strong { font-weight:bold; }
+.clear     { background: transparent; }
+.strong    { font-weight: bold; }

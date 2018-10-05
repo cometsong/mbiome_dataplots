@@ -42,7 +42,7 @@ def find_pipeline_qc_files(folder_path, fileglob=PIPELINE_FILE_GLOB):
         log.info('Finding pipeline QC files')
         pipe_files = get_file_paths(folder_path, fileglob=fileglob)
     except Exception as e:
-        log.error('Issues finding pipeline files in "%s"', run_path)
+        log.exception('Issues finding pipeline files in "%s"', run_path)
         raise e
     else:
         log.debug('found %s pipeline qc files', len(pipe_files))
@@ -130,7 +130,7 @@ def make_layout(title='', bgcolor='aliceblue', fontsize=12):
         )
         log.debug('made layout: %s', str(layout))
     except Exception as e:
-        log.error('make_layout NOT made!!')
+        log.exception('make_layout NOT made!!')
         raise e
     else:
         return layout
@@ -156,7 +156,7 @@ def plot_bar_chart(fp, df):
             marker_line = {'color': 'black',
                            'width': 1 }
         except Exception as e:
-            log.error('bar_chart: display variables NOT set')
+            log.exception('bar_chart: display variables NOT set')
             raise e
 
         try:
@@ -207,7 +207,7 @@ def plot_bar_chart(fp, df):
             log.debug('bar_chart: layout variables set')
             # log.debug('bar_chart: layout: %s', str(layout))
         except Exception as e:
-            log.error('bar_chart: layout NOT made')
+            log.exception('bar_chart: layout NOT made')
             raise e
 
         try:
@@ -238,7 +238,7 @@ def plot_bar_chart(fp, df):
                 data.append(bar)
             # log.debug('bar_chart: data: %s', str(data))
         except Exception as e:
-            log.error('bar_chart: data traces NOT made')
+            log.exception('bar_chart: data traces NOT made')
             raise e
 
         try:
@@ -247,7 +247,7 @@ def plot_bar_chart(fp, df):
             # log.debug('bar_chart: made figure')
             # log.debug('bar_chart: figure %s', str(fig.__dict__))
         except Exception as e:
-            log.error('bar_chart: figure')
+            log.exception('bar_chart: figure')
             raise e
 
         try:
@@ -269,11 +269,11 @@ def plot_bar_chart(fp, df):
             # log.debug('bar_chart: plots: %s', str(plots))
 
         except Exception as e:
-            log.error('bar_chart: plot not working')
+            log.exception('bar_chart: plot not working')
             raise e
 
     except Exception as e:
-        log.error('bar_chart: plotting for file "%s"', fp.name)
+        log.exception('bar_chart: plotting for file "%s"', fp.name)
         raise e
     else:
        return plot
@@ -295,7 +295,7 @@ def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonho
             fpaths = find_pipeline_qc_files(run_path)
             # log.debug('plot_16S: fpaths: %s', str(fpaths))
         except Exception as e:
-            log.error('Issues finding files in "%s"', run_path)
+            log.exception('Issues finding files in "%s"', run_path)
             raise e
 
         try:
@@ -314,16 +314,16 @@ def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonho
                     # create stacked bar plots
                     fp_bar = plot_bar_chart(fp, df)
                 except Exception as e:
-                    log.error('Issues plotting bar: file "%s" in "%s"', fp.name, run_path)
+                    log.exception('Issues plotting bar: file "%s" in "%s"', fp.name, run_path)
                 else:
                     plot_map[fp.stem] = fp_bar
 
         except Exception as e:
-            log.error('Issues plotting qc files in "%s"', run_path)
+            log.exception('Issues plotting qc files in "%s"', run_path)
             raise e
 
     except Exception as e:
-        log.error('Issues in plot_16S in "%s"', run_path)
+        log.exception('Issues in plot_16S in "%s"', run_path)
         raise e
     finally:
         log.info('Plotted %s ', len(plot_map.keys()))
@@ -341,5 +341,5 @@ if __name__ == '__main__':
         print(f'pipeline_16S_qc_plots: {pipeline_16S_qc_plots!s}')
     except Exception as e:
         # current_app.logger.error('issues plotting bar charts for run: %s', run_path) #TODO: is 'run_path var type 'Path' ??
-        log.error('issues plotting bar charts for run: %s', run_path)
+        log.exception('issues plotting bar charts for run: %s', run_path)
         raise e

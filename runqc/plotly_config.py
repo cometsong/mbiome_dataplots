@@ -1,5 +1,5 @@
 import logging
-log = logging.getLogger('plots')
+log = logging.getLogger('plotly_config')
 log_format = '%(levelname)s in "%(name)s" on %(lineno)d: %(message)s'
 logging.basicConfig(format=log_format, level=logging.DEBUG)
 
@@ -54,7 +54,7 @@ try:
     }
     log.debug('plotly config defined')
 except Exception as e:
-    log.error('plotly config dict NOT defined')
+    log.exception('plotly config dict NOT defined')
     raise e
 
 

@@ -39,9 +39,10 @@ def check_run_info_json(func, run_path, *args, **kwargs):
     and create it if not.
     N.B. Expects view first arg = 'run_path'
     """
-    # run_path = args[0]
+    json_filename = kwargs.pop(json_filename, 'run_info.json')
+
     run = Path(run_path)
-    info = run / 'run_info.json'
+    info = run / json_filename
     try:
         if info.exists():
             txt = info.read_text()

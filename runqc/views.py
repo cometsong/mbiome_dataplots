@@ -7,8 +7,8 @@ from flask import make_response, render_template, redirect, request, send_from_d
 from runqc.pipe_qc_plots import plot_16S_read_counts
 from runqc.utils import \
     make_tree, \
-    get_run_json, \
-    make_json_from_qc_files, \
+    get_run_info_json, \
+    make_run_json_from_qc_files, \
     get_run_qcreport_data, \
     get_file_paths, \
     parse_run_name_qc
@@ -101,12 +101,12 @@ def run_details(run_path, subitem=''):
         # load sequencer core's run info from json or make it
         try:
             current_app.logger.info('Getting run_info from: %s / %s', run_abspath, run_json)
-            info_json = get_run_json(run_abspath, run_json)
+            info_json = get_run_info_json(run_abspath, run_json)
 
             # check if pre-existing before reading both QC files...
             if 'FlowCellID' not in info_json \
             or 'Project' not in info_json:
-                info_json = make_json_from_qc_files(run_abspath, run_json)
+                info_json = make_run_json_from_qc_files(run_abspath, run_json)
             # update values:
             if 'FlowCellID' in info_json:
                 current_app.logger.info('Getting flowcell from run_info')

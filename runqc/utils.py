@@ -49,7 +49,7 @@ def check_run_info_json(func, run_path, *args, **kwargs):
             if '{' in txt:
                 run_info = json.loads(txt)
         else:
-            run_info = make_json_from_qc_files(run_dir, json_filename)
+            run_info = make_run_json_from_qc_files(run_dir, json_filename)
     except Exception as e:
         raise e
     finally:
@@ -122,8 +122,8 @@ def get_run_qcreport_data(project_name, run_dir,
         return qcr_data_path
 
 
-def get_run_json(run_dir, json_filename):
-    """Parse run json file if exists, else make one from the QC csv files in the run_path"""
+def get_run_info_json(run_dir, json_filename):
+    """Parse run info json file if exists, else make one from the QC csv files in the run_path"""
     run_info = {'info details': 'not found'}
     try:
         run_path = Path(run_dir)
@@ -133,7 +133,7 @@ def get_run_json(run_dir, json_filename):
             json_text = run_json.read_text()
             run_info = json.loads(json_text)
         except:
-            run_info = make_json_from_qc_files(run_dir, json_filename)
+            run_info = make_run_json_from_qc_files(run_dir, json_filename)
         current_app.logger.info('run_json: %s', run_info)
     except Exception as e:
         raise e
@@ -141,11 +141,11 @@ def get_run_json(run_dir, json_filename):
         return run_info
 
 
-def make_json_from_qc_files(dirname: str, json_filename: str):
-    """read QC csv files and create run summary in json format"""
+def make_run_json_from_qc_files(dirname: str, json_filename: str):
+    """read QC csv files and create run summary info, in json format"""
     try:
-        work_path = Path(dirname).resolve()
-        json_file = work_path / json_filename
+        run_path = Path(dirname).resolve()
+        run_json = run_path / json_filename
 
         info_dict = {}
         qc_info = {}
@@ -164,7 +164,7 @@ def make_json_from_qc_files(dirname: str, json_filename: str):
             ]
 
         current_app.logger.info('Finding QCreport file')
-        qc_report_list = list(work_path.glob(qc_report_csv_glob))
+        qc_report_list = list(run_path.glob(qc_report_csv_glob))
         # current_app.logger.debug('qc_report_list: %s', qc_report_list)
         qcr_lines = []
         try:
@@ -189,7 +189,7 @@ def make_json_from_qc_files(dirname: str, json_filename: str):
             current_app.logger.error('reading from run''s QCreport csv file!')
 
         current_app.logger.info('Finding RunMetrics file')
-        run_metrics_list = list(work_path.glob(run_metrics_csv_glob))
+        run_metrics_list = list(run_path.glob(run_metrics_csv_glob))
         current_app.logger.debug('run_metrics_list: %s', run_metrics_list)
         run_metrics_dict = {}
         try:
@@ -213,10 +213,10 @@ def make_json_from_qc_files(dirname: str, json_filename: str):
     try:
         current_app.logger.info('Writing info out to json file.')
         try:
-            json_file.open(mode='w')
-            json_file.write_text(json.dumps(info_dict))
+            run_json.open(mode='w')
+            run_json.write_text(json.dumps(info_dict))
         except:
-            current_app.logger.error('json file %s is not writable!', json_file)
+            current_app.logger.error('json file %s is not writable!', run_json)
     except OSError as e:
         raise e
 

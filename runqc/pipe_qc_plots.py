@@ -225,7 +225,7 @@ def plot_bar_chart(fp, df):
                     x = df[colname],
                     y = df.index,
                     text = df[colname],
-                    textposition = 'outside' if i is 1 else 'inside', 
+                    textposition = 'outside' if i is 0 else 'inside', 
                     textfont = {'size': 14,
                                 'color': 'black'},
                     # transforms = [{

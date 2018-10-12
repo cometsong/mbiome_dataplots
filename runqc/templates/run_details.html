@@ -39,8 +39,9 @@
 
 {% if read_count_sheets %}
 <section id="read_count">
-  <h2>Read Count</h2>
+  <h2>Read Count
   <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
+  </h2>
   <ul>
     {% for sheet in read_count_sheets %}
     <li>
@@ -51,6 +52,7 @@
 </section>
 {% endif %}
 
+{% if run_metric_csv %}
 <section id="run_metric">
   <h2>Run Metrics</h2>
   <div class="csv" id="run_metric_csv"></div>
@@ -72,10 +74,13 @@
     });
   </script>
 </section>
+{% endif %}
 
+{% if qcreport_data %}
 <section id="qcreport">
-  <h2>QC Report</h2>
+  <h2>QC Report
   <b class="indented_note">Number of reads shown here is number of read pairs.</b>
+  </h2>
   <div class="csv" id="qcreport_csv"></div>
   <script>
     CsvToHtmlTable.init({
@@ -96,14 +101,15 @@
     });
   </script>
 </section>
+{% endif %}
 
-{% if pipeline_16S_qc_plots %}
+{% if pipe_16S_qc_plots %}
 <section id="pipe_16S">
-  <h2>Pipeline 16S<br/>Read Counts</h2>
-  <b class="indented_note">Shown in these plots is number of reads to start and left after each step of the 16S pipeline.</b>
+  <h2>Read Counts from 16S Pipeline
+  <b class="indented_note">Shown in these plots is number of reads removed in each step of the 16S pipeline, plus starting and final count.</b>
+  </h2>
   {% autoescape false %}
-    {% for plotname, plot in pipeline_16S_qc_plots.items() %}
-      <h5><a href="{{plotname}}.csv" download>{{plotname}}</a></h5>
+    {% for plotname, plot in pipe_16S_qc_plots.items() %}
       {{plot}}
     {% endfor %}
   {% endautoescape %}

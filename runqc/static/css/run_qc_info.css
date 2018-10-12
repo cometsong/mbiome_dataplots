@@ -64,18 +64,11 @@ h1, h2, h3, h4 {
   color           : var(--clr-night);
   font-size       : var(--med-lrg);
   font-weight     : bold;
-}
-h2, h3 {
-  font-size       : var(--med-lrg);
   text-decoration : underline;
 }
-h4 {
+h3, h4 {
   font-size       : var(--medium);
-}
-
-h5 a {
-  border          : 2px solid var(--bgr-header);
-  border-radius   : 8px;
+  text-decoration : none;
 }
 
 a, a:active, a:hover, a:visited {
@@ -164,6 +157,7 @@ section {
 }
 section ul {
   list-style-type : circle;
+  font-size       : var(--med-sml);
 }
 section li {
   line-height     : 2;
@@ -197,6 +191,11 @@ section a.img, a.img:active, a.img:hover, a.img:visited {
   margin           : 0px;
 }
 
+/* override plotly block spacing */
+section div.plotly {
+  margin-top: 20px !important;
+}
+
 /* responsiveness */
 @media (max-width: 840px) {
   section img {
@@ -209,10 +208,6 @@ section a.img, a.img:active, a.img:hover, a.img:visited {
 .csv li {
   display: inline-table;
 	border: 1px solid #ddd;
-}
-
-#read_count ul {
-  margin-top: -20px; /* make up for relocated indented note */
 }
 
 /*
@@ -246,15 +241,11 @@ div.table rp b:first-child {
 /* misc styles */
 .indented_note { /* note to the right of line above */
   position     : relative;
-  display      : inline;
-  top          : -2.1em;
-  left         : 10em;
+  left         : 2em;
   font-weight  : normal;
   font-style   : oblique;
-  padding      : 2px 5px;
-  border-top   : 1px dashed var(--clr-night);
-  border-bottom: 1px dashed var(--clr-night);
-  font-size    : var(--x-small);
+  font-size    : 70%;
+  text-decoration: underline overline dashed !important;
 }
 .indented_note a {
   border       : 0px;
@@ -270,3 +261,4 @@ s, small {
 .no-border { border: 0px none transparent; }
 .clear     { background: transparent; }
 .strong    { font-weight: bold; }
+sub, .sub  { vertical-align: text-bottom; }

@@ -128,11 +128,12 @@ def run_details(run_path, subitem=''):
             raise e
 
         # check if files being linked to exist (yet)
+        run_metric_csv = get_file_paths(run_abspath, 'Run_Metric_Summary_*.csv', name_only=True)
         read_count_sheets = get_file_paths(run_abspath, '*_Samples_Read_Count.xls*', name_only=True)
         read_dist_images = get_file_paths(run_abspath, '*_Read_Distributions.png', name_only=True)
 
         try:
-            pipeline_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
+            pipe_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
         except Exception as e:
             current_app.logger.error('issues plotting bar charts for run: %s', run_path)
             raise e
@@ -147,9 +148,10 @@ def run_details(run_path, subitem=''):
         'run_name': run_name,
         'gt_project': gt_project,
         'qcreport_data': qcreport_data,
+        'run_metric_csv': run_metric_csv,
         'read_count_sheets': read_count_sheets,
         'read_dist_images': read_dist_images,
-        'pipeline_16S_qc_plots': pipeline_16S_qc_plots,
+        'pipe_16S_qc_plots': pipe_16S_qc_plots,
     }
     # current_app.logger.debug('context: %s', vars)
     response = make_response(render_template('run_details.html', **vars))

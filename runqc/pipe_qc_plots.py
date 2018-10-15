@@ -361,7 +361,7 @@ def calc_read_diffs(df_orig, columns=[]): #, newcols=[]):
         diff_df.uncombined = df_orig.eval('trimmed - combined')
         diff_df.trimmed    = df_orig.eval('raw - trimmed')
     except Exception as e:
-        log.exception('Issues finding files in "%s"', run_path)
+        log.exception('Issues getting diffs from "%s"', )
         raise e
     else:
         return diff_df
@@ -390,14 +390,24 @@ def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonho
             # read contents of each filepath
             # pipe logs have header:
             #       Sample_name,QC_raw,QC_trim,QC_combined,QC_nonchimera,QC_nonhost
+            # Renamed here for plot display:
             readcnts = ['raw', 'trimmed', 'combined', 'nonchimera', 'nonhost']
             colnames = ['Sample_Name'] + readcnts
             log.debug('plot_16S: colnames=%s', str(colnames))
             for fp in fpaths:
-                df = pd.read_csv(fp, header=0, names=colnames, index_col=0)
+                #read_csv skiprows lambda skips any rows with empty value for sample_name
+                df_read = pd.read_csv(fp, header=0, names=colnames, index_col=0,
+                                      skiprows=lambda r: not r, )
+                # replace non-numeric values e.g. 'Missing' with zeros
+                df = df_read.replace(regex='^.*[^\d].*$', value='0')
+                # re-convert all 'object' dtypes to 'int'
+                astypes = {col: int for col in df.columns[1:]}
+                df = df.astype(astypes)
+
                 # log.debug('plot_16S: df.columns=%s', str(df.columns))
                 if sort_by:
                     df.sort_values(by=sort_by, ascending=True, inplace=True)
+
                 try: # calc num reads removed in each pipe step
                     df = calc_read_diffs(df, columns=readcnts) #, newcols=readdifs)
                 except Exception as e:

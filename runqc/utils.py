@@ -148,28 +148,26 @@ def make_run_json_from_qc_files(dirname: str, json_filename: str):
         run_json = run_path / json_filename
 
         info_dict = {}
-        qc_info = {}
-        metric_info = {}
 
-        qc_report_csv_glob = '*_QCreport*.csv'
-        qc_report_fieldnames = \
-            [ 'Project', 'Sequence Protocol', 'Sample Size', 'Fastq Files', 'Date Report' ]
-        # N.B. line formats of this report are: "Project: 18-weinstock-005,,,,,"
-
-        run_metrics_csv_glob = 'Run_Metric_*.csv'
-        run_metrics_field_names = \
-            ['RunDate', 'ProjectSeqRequestDate', 'LIMSProjectID', 'LIMSID', 'MachineID',
-             'FlowCellID', 'LoadingConc.(pM)', 'Density', 'PF', 'Q30',
-             'Reads(M)', 'ReadsPF (M)', 'TotalYield(Gb)', 'PhiXAligned%', 'PHIXLot'
-            ]
-
-        current_app.logger.info('Finding QCreport file')
-        qc_report_list = list(run_path.glob(qc_report_csv_glob))
-        # current_app.logger.debug('qc_report_list: %s', qc_report_list)
-        qcr_lines = []
         try:
+            current_app.logger.info('Finding QCreport file')
+            qc_report_csv_glob = '*_QCreport*.csv'
+            qc_info = {}
+            qc_report_fieldnames = [
+                'Project',
+                'Application',
+                'Sequence Protocol',
+                'Sample Size',
+                'Fastq Files',
+                'Date Report',
+            ]
+            # N.B. line formats of this report are: "Project: 18-weinstock-005,,,,,"
+
+            qc_report_list = list(run_path.glob(qc_report_csv_glob))
+            # current_app.logger.debug('qc_report_list: %s', qc_report_list)
             qc_report_csv = qc_report_list[0]
             qcr_lines = read_file_text(qc_report_csv)
+            qc_info = {'GT Project': None} # first item in display
 
             qcr_rows = [r.split(',') for r in qcr_lines]
             # current_app.logger.debug('length qcr_rows: %s', len(qcr_rows))
@@ -182,45 +180,101 @@ def make_run_json_from_qc_files(dirname: str, json_filename: str):
                         [f1, f2] = row[0].replace(',', '').split(': ')
                         # current_app.logger.debug('f1,f2: %s, %s', f1, f2)
                         qc_info.update({f1: f2})
+            qc_info['GT Project'] = qc_info.pop('Project', None)
             current_app.logger.debug('qc_info: %s', qc_info)
 
-            info_dict.update(qc_info)
         except Exception as e:
-            current_app.logger.error('reading from run''s QCreport csv file!')
+            current_app.logger.exception('reading from run''s QCreport csv file!')
+        finally:
+            info_dict.update(qc_info)
 
-        current_app.logger.info('Finding RunMetrics file')
-        run_metrics_list = list(run_path.glob(run_metrics_csv_glob))
-        current_app.logger.debug('run_metrics_list: %s', run_metrics_list)
-        run_metrics_dict = {}
         try:
+            current_app.logger.info('Finding RunMetrics file')
+            run_metrics_csv_glob = 'Run_Metric_*.csv'
+            metric_info = {}
+            metrics_fields = {
+                # header string in file:  display_on_page,
+                'LIMSProjectID':         'GT Project',
+                'FlowCellID':            'FlowCell ID',
+                'RunDate':               'Run Date',
+                # 'ProjectSeqRequestDate': 'Run Request Date', 
+                'MachineID':             'Machine ID',
+                'Reads(M)':              'Reads (M)',
+                'TotalYield(Gb)':        'Total Yield (Gb)',
+                'LoadingConc.(pM)':      'Loading Conc. (pM)',
+                'Density':               'Cluster Density',
+                'PhiXAligned%':          'PhiX % Aligned',
+                'Q30':                   'Overall % Q30',
+                'R1: %>=Q30':            '%>=Q30: Read 1',
+                'R2: %>=Q30':            '%>=Q30: Read 2',
+                'R1: Error Rate':        'Error Rate: Read 1',
+                'R2: Error Rate':        'Error Rate: Read 2',
+                }
+
+            run_metrics_list = list(run_path.glob(run_metrics_csv_glob))
+            # current_app.logger.debug('run_metrics_list: %s', run_metrics_list)
+            run_metrics_dict = {}
+
             run_metrics_csv = run_metrics_list[0]
+            import pprint
+            pp = pprint.PrettyPrinter(indent=12, width=80)
+            pf = pp.pformat
             with open(run_metrics_csv) as qrm:
                 qrm_head = qrm.readline().split(',')
                 qrm_data = qrm.readline().split(',')
                 run_metrics_dict = dict(zip(qrm_head, qrm_data))
+                # current_app.logger.debug('.... run metric dict init')
+                for line in qrm.readlines():
+                    metricline = [ f.strip() for f in line.split(',') ]
+                    # current_app.logger.debug('.... run metricline: %s', metricline)
+                    if metricline[0] == 'Level':
+                        # current_app.logger.debug('.... run metricline level')
+                        qrm_head_1 = [ 'R1: '+d for d in metricline if d ]
+                        # current_app.logger.debug('.... run metric head 1: %s', pf(qrm_head_1))
+                        qrm_head_4 = [ 'R2: '+d for d in metricline if d ]
+                        # current_app.logger.debug('.... run metric head 4: %s', pf(qrm_head_4))
 
-            metric_info = {k:v for k,v in run_metrics_dict.items()
-                           if k in run_metrics_field_names}
-            current_app.logger.debug('metric_info: %s', metric_info)
+                    if metricline[0] == 'Read 1':
+                        # current_app.logger.debug('.... run metric Read 1: %s', pf(metricline))
+                        run_metrics_dict.update(dict(zip(qrm_head_1, metricline)))
+                        # current_app.logger.debug('run_metric_dict: %s', pf(run_metrics_dict))
 
-            info_dict.update(metric_info)
+                    if metricline[0] == 'Read 2 (I)':
+                        continue
+                    if metricline[0] == 'Read 3 (I)':
+                        continue
+
+                    if metricline[0] == 'Read 4':
+                        # current_app.logger.debug('.... run metric Read 4: %s', pf(metricline))
+                        run_metrics_dict.update(dict(zip(qrm_head_4, metricline)))
+                        # current_app.logger.debug('run_metric_dict: %s', pf(run_metrics_dict))
+
+                    if metricline[0] == 'Total':
+                        break
+
+            metric_info = { v:run_metrics_dict[k]
+                           for k,v in metrics_fields.items()
+                           if metrics_fields.get(k, None)}
+            # current_app.logger.debug('metric_info: %s', metric_info)
+
         except Exception as e:
-            current_app.logger.error('reading from run''s Run Metrics csv file!')
-
-    except Exception as e:
-        raise e
+            current_app.logger.exception('reading from run''s Run Metrics csv file!')
+        finally:
+            info_dict.update(metric_info)
     
-    try:
-        current_app.logger.info('Writing info out to json file.')
         try:
+            current_app.logger.info('Writing info out to json file.')
             run_json.open(mode='w')
             run_json.write_text(json.dumps(info_dict))
-        except:
-            current_app.logger.error('json file %s is not writable!', run_json)
-    except OSError as e:
-        raise e
+        except OSError as e:
+            current_app.logger.exception('json file %s is not writable!', run_json)
+            raise e
 
-    return info_dict
+    except Exception as e:
+        current_app.logger.exception('Error making gathering run info from qc files.')
+        raise e
+    finally:
+        return info_dict
 
 
 def get_file_paths(folder, fileglob="*", name_only=False):

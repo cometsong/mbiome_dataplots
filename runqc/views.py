@@ -104,18 +104,18 @@ def run_details(run_path, subitem=''):
             info_json = get_run_info_json(run_abspath, run_json)
 
             # check if pre-existing before reading both QC files...
-            if 'FlowCellID' not in info_json \
-            or 'Project' not in info_json:
+            if 'FlowCell ID' not in info_json \
+            or 'GT Project' not in info_json:
                 info_json = make_run_json_from_qc_files(run_abspath, run_json)
             # update values:
             if 'FlowCellID' in info_json:
                 current_app.logger.info('Getting flowcell from run_info')
                 flowcell = info_json['FlowCellID']
             if 'LIMSProjectID' in info_json:
-                info_json['Project'] = info_json.pop('LIMSProjectID')
-            if 'Project' in info_json:
+                info_json['GT Project'] = info_json.pop('LIMSProjectID')
+            if 'GT Project' in info_json:
                 current_app.logger.info('Getting gt_project from run_info')
-                gt_project = info_json['Project']
+                gt_project = info_json['GT Project']
 
         except Exception as e:
             current_app.logger.error('JSON issues...')

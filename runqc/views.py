@@ -219,9 +219,7 @@ def fastqc_list(run_path, subitem='files'):
         for item in fastqc_tree['contents']:
             # Pcurrent_app.logger.debug('fastqc item: %s', item)
             (key, path) = item.popitem()
-            base = os.path.basename(path)
-            name = base
-            href = base
+            name = href = base = os.path.basename(path)
             if not name.endswith('.html'):
                 continue
             name = name.rstrip('.html')

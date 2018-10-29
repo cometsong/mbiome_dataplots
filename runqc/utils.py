@@ -330,3 +330,33 @@ def parse_run_name_qc(dirname):
     return run_name
 
 
+def delimited_to_dict(filepath:str, delim='\t', keep_empty_contents=True):
+    """Read contents of delmited file (default delim: \t),
+        Return as dict with first column as key.
+        Val as list of remaining fields, or str if only single field.
+        k and v are empty strings if keep_empty_contents, else None.
+    """
+    try:
+        the_dict = {}
+        empty = '' if keep_empty_contents else None
+        current_app.logger.info('delimited_to_dict file: %s', filepath)
+        with open(filepath, 'r') as fp:
+            for line in fp.readlines():
+                k = v = empty
+                elems = [ l.strip() for l in line.split(delim) ]
+                if elems:
+                    k = elems.pop(0)
+                    v = elems
+                    if len(v)==1:
+                        v = str(v[0])
+                the_dict.update({k: v})
+    except FileNotFoundError as e:
+        msg = f'!! Error file {filepath} not found!'
+        current_app.logger.exception(msg)
+    except Exception as e:
+        msg = f'!! Error converting file {filepath} to a dict.'
+        current_app.logger.exception(msg)
+    finally:
+        current_app.logger.debug('delimited dict: %s', the_dict)
+        return the_dict
+

@@ -11,7 +11,8 @@ from runqc.utils import \
     make_run_json_from_qc_files, \
     get_run_qcreport_data, \
     get_file_paths, \
-    parse_run_name_qc
+    parse_run_name_qc, \
+    delimited_to_dict
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Routes and Views ~~~~~
 run_info = Blueprint('run_info', __name__) #, url_prefix='/runs')
@@ -82,8 +83,7 @@ def run_details(run_path, subitem=''):
                                            as_attachment=attach)
 
     except Exception as e:
-        current_app.logger.error('testing subitem types %s %s', run_path, subitem)
-        raise e
+        current_app.logger.exception('testing subitem types %s %s', run_path, subitem)
 
     try:
         run_name = parse_run_name_qc(run_path)
@@ -118,27 +118,61 @@ def run_details(run_path, subitem=''):
                 gt_project = info_json['GT Project']
 
         except Exception as e:
-            current_app.logger.error('JSON issues...')
-            raise e
+            current_app.logger.exception('JSON issues...')
 
         try:
             qcreport_data = get_run_qcreport_data(gt_project, run_abspath)
         except Exception as e:
-            current_app.logger.error('issues reading QCreport data for run: %s', run_path) #TODO: is 'run_path var type 'Path' ??
-            raise e
+            current_app.logger.exception('issues reading QCreport data for run: %s', run_path) #TODO: is 'run_path var type 'Path' ??
 
         # check if files being linked to exist (yet)
-        run_metric_csv = get_file_paths(run_abspath, 'Run_Metric_Summary_*.csv', name_only=True)
-        read_count_sheets = get_file_paths(run_abspath, '*_Samples_Read_Count.xls*', name_only=True)
-        read_dist_images = get_file_paths(run_abspath, '*_Read_Distributions.png', name_only=True)
+        run_metric_csv = get_file_paths(run_abspath, 'Run_Metric_*.csv', name_only=True)
+
+        read_count_sheets = get_file_paths(run_abspath,
+                                '[Ss]amples_[Rr]ead_[Cc]ount*.*', name_only=True)
+        read_dist_images = get_file_paths(run_abspath,
+                                '*_Read_Distributions.png', name_only=True)
+        read_dist_images.extend(get_file_paths(run_abspath,
+                                'raw_read_distribution_plot*.png', name_only=True))
+
+        fastqc_stats = get_file_paths(run_abspath, 'fastqc_stats.tsv')
+        if fastqc_stats:
+            fastqc_stats = delimited_to_dict(fastqc_stats[0])
+        else:
+            fastqc_stats = None
+        # current_app.logger.debug(f'fastq_stats: {fastqc_stats}')
+
+        # check for control assemblies accuracies
+        control_assems = {}
+
+        flash_stats = get_file_paths(run_abspath, 'flash_stats.tsv')
+        if flash_stats:
+            flash_stats = delimited_to_dict(flash_stats[0])
+            control_assems['flash_stats'] = flash_stats
+
+        flash_accuracy_img = get_file_paths(run_abspath,
+                             'flash_assembly_accuracy_plot.png', name_only=True)
+        if flash_accuracy_img:
+            flash_accuracy_img = flash_accuracy_img[0]
+            control_assems['flash_plot'] = flash_accuracy_img
+
+        pear_stats = get_file_paths(run_abspath, 'pear_stats.tsv')
+        if pear_stats:
+            pear_stats = delimited_to_dict(pear_stats[0])
+            control_assems['pear_stats'] = pear_stats
+
+        pear_accuracy_img = get_file_paths(run_abspath,
+                            'pear_assembly_accuracy_plot.png', name_only=True)
+        if pear_accuracy_img:
+            pear_accuracy_img = pear_accuracy_img[0]
+            control_assems['pear_plot'] = pear_accuracy_img
 
         try:
             pipe_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
         except Exception as e:
-            current_app.logger.error('issues plotting bar charts for run: %s', run_path)
-            raise e
-
+            current_app.logger.exception('issues plotting bar charts for run: %s', run_path)
     except Exception as e:
+        current_app.logger.exception('issues generating run_details: %s', run_path)
         raise e
 
     vars = {
@@ -147,10 +181,12 @@ def run_details(run_path, subitem=''):
         'run_abspath': run_abspath,
         'run_name': run_name,
         'gt_project': gt_project,
+        'fastqc_stats': fastqc_stats,
         'qcreport_data': qcreport_data,
         'run_metric_csv': run_metric_csv,
         'read_count_sheets': read_count_sheets,
         'read_dist_images': read_dist_images,
+        'control_assems': control_assems,
         'pipe_16S_qc_plots': pipe_16S_qc_plots,
     }
     # current_app.logger.debug('context: %s', vars)

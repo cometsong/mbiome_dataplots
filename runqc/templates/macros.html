@@ -1,0 +1,9 @@
+{% macro dict_to_table(the_dict, in_div=True, indent=True) -%}
+  {% if in_div -%}<div class="table
+  {% if indent -%}indent{% endif %}">{% endif %}
+    {% for key,val in the_dict.items() %}
+    <rp><b>{{key}}</b><b>{{val}}</b></rp>
+    {% endfor %}
+  {% if in_div -%}</div>{% endif %}
+{%- endmacro %}
+

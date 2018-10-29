@@ -1,5 +1,5 @@
 # __all__ = ['app', 'config', 'views', 'db', 'models', 'files']
-__version_bits__ = (1, 1, 3)
+__version_bits__ = (1, 2, 0)
 __version__ = ".".join(map(str,__version_bits__))
 
 import os
@@ -43,6 +43,15 @@ def check_app_config(app):
 
     except Exception as e:
         raise e
+
+
+def configure_templates(app):
+    opts = dict(
+        lstrip_blocks = True,
+        trim_blocks = True,
+        autoescape = True,
+    )
+    app.jinja_environment(app, **opts)
 
 
 def configure_extensions(app):

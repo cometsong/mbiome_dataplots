@@ -48,6 +48,7 @@ legend{color:inherit;display:table;max-width:100%;padding:0;white-space:normal}t
   --large    : 1.55em;
   --x-large  : 1.70em;
   --xx-large : 1.95em;
+  --neg-lrg  : -2em;
 
 }
 
@@ -67,7 +68,7 @@ h1, h2, h3, h4 {
   text-decoration : underline;
 }
 h3, h4 {
-  font-size       : var(--medium);
+  font-size       : var(--med-sml);
   text-decoration : none;
 }
 
@@ -113,7 +114,7 @@ footer { /* page tail fixed at bottom of screen */
 .topmenu {
   position        : -webkit-sticky; /* Safari */
   position        : sticky;
-  z-index         : 99;
+  z-index         : 50;
   display         : inline-block;
   top             : 0;
   left            : 0;
@@ -124,12 +125,15 @@ footer { /* page tail fixed at bottom of screen */
   color           : var(--clr-night);
   letter-spacing  : 1px;
   font-family     : "Segoe UI",Arial,sans-serif;
+  border-bottom   : thin solid var(--clr-main);
 }
 .topmenu a {
+  z-index         : 60;
   padding         : 5px 15px;
   margin-left     : -5px;
   border          : thin solid transparent;
   border-right    : thin solid var(--clr-main);
+  border-bottom   : thin solid var(--clr-main);
   border-radius   : 0px;
   display         : inline-block;
   font-style      : oblique;
@@ -150,10 +154,12 @@ section {
   clear           : both;
   position        : relative;
   display         : block;
-  margin          : 20px;
+  margin          : var(--med-lrg);
+	padding-bottom  : var(--large);
+	border-bottom   : solid medium var(--bgr-header);
 
-  margin-top      : -30px; /* for #anchor link under menu */
-  padding-top     : 25px;  /* for #anchor link under menu */
+  margin-top      : var(--neg-lrg); /* for #anchor link under menu */
+  padding-top     : var(--x-large); /* for #anchor link under menu */
 }
 section ul {
   list-style-type : circle;
@@ -178,6 +184,7 @@ section img {
   border  : 3px solid var(--bgr-header);
   padding : 1px;
   margin  : 5px;
+  max-width: 95%;
 }
 section img:hover {
   border  : 4px solid var(--clr-royal);
@@ -197,10 +204,47 @@ section div.plotly {
 }
 
 /* responsiveness */
-@media (max-width: 840px) {
+@media (max-width: 810px) {
   section img {
     width: 95%;
   }
+  header {
+    font-size: var(--medium);
+  }
+  .topmenu {
+    font-size: var(--small);
+    letter-spacing: 0px;
+  }
+  .topmenu a {
+    padding: 3px 5px;
+    margin-left: -4px;
+  }
+}
+@media (max-width: 500px) {
+  section img {
+    width: 97%;
+  }
+}
+
+@media print {
+  img {
+    max-width         : 100% !important;
+    page-break-inside : avoid;
+  }                     
+ h1, h2, h3, h4, h5 {
+    page-break-after  : avoid;
+  }
+}
+
+/* columnar format within parent block */
+.column {
+  display        : inline-block;
+  height         : 100%;
+  vertical-align : text-top;
+  margin-right   : 5%;
+}
+.column img {
+  max-width: 95%;
 }
 
 /* revert "csv" back to initial dataTable/bootstrap formats */

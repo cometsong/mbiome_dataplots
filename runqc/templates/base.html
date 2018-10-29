@@ -42,10 +42,10 @@
       <a href="#run_info"   >Run Info</a>
       <a href="#fastqc"     >FastQC</a>
     {% if read_dist_images %}  <a href="#read_dist"  >Read Distribution</a> {% endif %}
-    {% if read_count_sheets %} <a href="#read_count" >Read Count Spreadsheet</a> {% endif %}
     {% if run_metric_csv %}    <a href="#run_metric" >Run Metrics <s>(GT)</s></a> {% endif %}
     {% if qcreport_data %}     <a href="#qcreport"   >Sample QC Report <s>(GT)</s></a> {% endif %}
-    {% if pipe_16S_qc_plots %} <a href="#pipe_16S"   >Read Counts from 16S pipeline</a> {% endif %}
+    {% if control_assems %}    <a href="#ctrl_assem" >Control Assembly <s>Accuracy</s></a> {% endif %}
+    {% if pipe_16S_qc_plots %} <a href="#pipe_16S"   >16S Read Counts <s>pipeline</s></a> {% endif %}
     </nav>
     {% endblock topmenu %}
 

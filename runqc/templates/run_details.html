@@ -39,8 +39,8 @@
   </div>
 </section>
 
-<section id="read_dist">
 {% if read_dist_images %}
+<section id="read_dist">
   <h2>Read Distribution</h2>
   {% for image in read_dist_images %}
   <a href="{{image}}" class="img" download><img src="{{image}}" alt="Plot {{image}}" ></a>
@@ -58,8 +58,8 @@
     </li>
     {% endfor %}
   </ul>
-{% endif %}
 </section>
+{% endif %}
 
 {% if run_metric_csv %}
 <section id="run_metric">

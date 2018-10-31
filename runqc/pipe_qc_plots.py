@@ -109,7 +109,7 @@ def make_layout(title='', bgcolor='aliceblue', fontsize=12):
         log.debug('make_layout: margins')
         layout_margins = dict(
             l = 5,  r = 5,
-            t = 30, b = 5,
+            t = 50, b = 5,
             pad = 0,
             autoexpand = True
         )

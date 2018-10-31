@@ -345,10 +345,10 @@ def plot_bar_chart(fp, df):
        return plot
 
 
-def calc_read_diffs(df_orig, columns=[]): #, newcols=[]):
+def calc_read_diffs(df_orig, columns=[]):
     """Caclulate differences between steps of pipeline, return new dataframe"""
     if not columns:
-        # columns = ['raw', 'trimmed', 'combined', 'nonchimera', 'nonhost']
+        # expected columns = ['raw', 'trimmed', 'combined', 'nonchimera', 'nonhost']
         columns = df.columns
     diffcols = ['final', 'host', 'chimera', 'uncombined', 'trimmed', 'total']
 
@@ -363,7 +363,7 @@ def calc_read_diffs(df_orig, columns=[]): #, newcols=[]):
     except Exception as e:
         log.exception('Issues getting diffs from "%s"', )
         raise e
-    else:
+    finally:
         return diff_df
 
 
@@ -396,10 +396,11 @@ def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonho
             log.debug('plot_16S: colnames=%s', str(colnames))
             for fp in fpaths:
                 #read_csv skiprows lambda skips any rows with empty value for sample_name
-                df_read = pd.read_csv(fp, header=0, names=colnames, index_col=0,
-                                      skiprows=lambda r: not r, )
+                df_read = pd.read_csv(fp, header=0, names=colnames, index_col=0)
                 # replace non-numeric values e.g. 'Missing' with zeros
                 df = df_read.replace(regex='^.*[^\d].*$', value='0')
+                # exclude NaN indexed sample names (missing, empty fields)
+                df = df.loc[df.index.notna()]
                 # re-convert all 'object' dtypes to 'int'
                 astypes = {col: int for col in df.columns[1:]}
                 df = df.astype(astypes)
@@ -409,7 +410,7 @@ def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonho
                     df.sort_values(by=sort_by, ascending=True, inplace=True)
 
                 try: # calc num reads removed in each pipe step
-                    df = calc_read_diffs(df, columns=readcnts) #, newcols=readdifs)
+                    df = calc_read_diffs(df, columns=readcnts)
                 except Exception as e:
                     log.exception('Issues calcing read diffs: file "%s" in "%s"', fp.name, run_path)
                 try: # create stacked bar plots

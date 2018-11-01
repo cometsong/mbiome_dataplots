@@ -63,12 +63,12 @@ body {
 
 h1, h2, h3, h4 {
   color           : var(--clr-night);
-  font-size       : var(--med-lrg);
+  font-size       : var(--large);
   font-weight     : bold;
   text-decoration : underline;
 }
 h3, h4 {
-  font-size       : var(--med-sml);
+  font-size       : var(--med-lrg);
   text-decoration : none;
 }
 
@@ -111,40 +111,33 @@ footer { /* page tail fixed at bottom of screen */
 /*
  * nav menu
  */
-.topmenu {
-  position        : -webkit-sticky; /* Safari */
+.topmenu, .navbar {
   position        : sticky;
   z-index         : 50;
-  display         : inline-block;
   top             : 0;
-  left            : 0;
-  right           : 0;
-  width           : 100%;
+  margin          : 0 -15px !important;
   font-size       : var(--medium);
-  background-color: var(--bgr-detail);
-  color           : var(--clr-night);
+  background-color: var(--bgr-detail) !important;
+  color           : var(--clr-night) !important;
   letter-spacing  : 1px;
-  font-family     : "Segoe UI",Arial,sans-serif;
-  border-bottom   : thin solid var(--clr-main);
+  min-height      : 0;
 }
-.topmenu a {
-  z-index         : 60;
-  padding         : 5px 15px;
-  margin-left     : -5px;
+.topmenu a, .navbar a {
+  padding         : 5px 15px !important;
   border          : thin solid transparent;
   border-right    : thin solid var(--clr-main);
   border-bottom   : thin solid var(--clr-main);
-  border-radius   : 0px;
-  display         : inline-block;
+  color           : var(--clr-night) !important;
   font-style      : oblique;
   text-decoration : none;
-  color           : var(--clr-night);
-  background-color: var(--bgr-detail);
 }
-.topmenu a:hover,.topmenu a:focus,.topmenu a.active {
-  border          : thin solid var(--clr-hover);
-  background-color: var(--clr-night);
-  color           : var(--clr-hover);
+.topmenu a:hover,.topmenu a:focus,.topmenu a.active,
+.navbar a:hover,.navbar a:focus,.navbar a.active {
+  border          : thin solid var(--clr-hover) !important;
+  background-color: var(--clr-night) !important;
+  color           : var(--clr-hover) !important;
+  font-style      : normal;
+  border-radius   : 4px;
 }
 
 /*
@@ -154,12 +147,12 @@ section {
   clear           : both;
   position        : relative;
   display         : block;
-  margin          : var(--med-lrg);
-	padding-bottom  : var(--large);
-	border-bottom   : solid medium var(--bgr-header);
-
-  margin-top      : var(--neg-lrg); /* for #anchor link under menu */
-  padding-top     : var(--x-large); /* for #anchor link under menu */
+	border-bottom   : solid 2px var(--bgr-header);
+  padding         : 20px 15px;
+  top             : -20px;
+}
+section:first-of-type {
+  /*! top             : -30px; */ /* for top of page */
 }
 section ul {
   list-style-type : circle;
@@ -199,8 +192,8 @@ section a.img, a.img:active, a.img:hover, a.img:visited {
 }
 
 /* override plotly block spacing */
-section div.plotly {
-  margin-top: 20px !important;
+section#pipe_16S > div {
+	margin: 30px -5px 30px -20px;
 }
 
 /* responsiveness */
@@ -299,6 +292,7 @@ div.table rp b:first-child {
 s, small {
   font-size       : var(--xx-small);
   text-decoration : none;
+  vertical-align  : text-top;
 }
 .large     { font-size: larger; }
 .indent    { margin-left: 2em; }

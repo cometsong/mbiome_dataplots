@@ -30,7 +30,7 @@
 
     <title>{% block title %}Mbiome Core Sequencer Run QC{% endblock title %}</title>
   </head>
-  <body>
+  <body data-spy="scroll" data-target=".navbar" data-offset="40">
     <header>
       {% block header %}
       <img src="/static/images/mu-letter-blue.png" height="25px">
@@ -38,14 +38,18 @@
       {% endblock header %}
     </header>
     {% block topmenu %}
-    <nav class="topmenu">
-      <a href="#run_info"   >Run Info</a>
-      <a href="#fastqc"     >FastQC</a>
-    {% if read_dist_images %}  <a href="#read_dist"  >Read Distribution</a> {% endif %}
-    {% if run_metric_csv %}    <a href="#run_metric" >Run Metrics <s>(GT)</s></a> {% endif %}
-    {% if qcreport_data %}     <a href="#qcreport"   >Sample QC Report <s>(GT)</s></a> {% endif %}
-    {% if control_assems %}    <a href="#ctrl_assem" >Control Assembly <s>Accuracy</s></a> {% endif %}
-    {% if pipe_16S_qc_plots %} <a href="#pipe_16S"   >16S Read Counts <s>pipeline</s></a> {% endif %}
+    <nav class="navbar navbar-default topmenu">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            <li><a href="#run_info"   >Run Info</a></li>
+            <li><a href="#fastqc"     >FastQC</a></li>
+            {% if read_dist_images %}  <li><a href="#read_dist"  >Read Distribution</a></li> {% endif %}
+            {% if run_metric_csv %}    <li><a href="#run_metric" >Run Metrics <s>(GT)</s></a></li> {% endif %}
+            {% if qcreport_data %}     <li><a href="#qcreport"   >Sample QC Report <s>(GT)</s></a></li> {% endif %}
+            {% if control_assems %}    <li><a href="#ctrl_assem" >Control Assembly <s>Accuracy</s></a></li> {% endif %}
+            {% if pipe_16S_qc_plots %} <li><a href="#pipe_16S"   >16S Read Counts <s>pipeline</s></a></li> {% endif %}
+        </ul>
+    </div>
     </nav>
     {% endblock topmenu %}
 

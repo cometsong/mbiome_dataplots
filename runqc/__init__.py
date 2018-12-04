@@ -15,16 +15,13 @@ from runqc.config import config
 from runqc import views
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Flask App Config ~~~~~
-def configure_app(app, env=None, test_config:dict={}):
-    if not test_config:
-        # load the instance config, if it exists, when not testing
-        if env:
-            app.config.from_object(config[env])
-        else:
-            app.config.from_object(config['default'])
-    else:
-        # load the test config if passed in
+def configure_app(app, env='default', test_config:dict={}):
+    if test_config:
+        # load only the test config if passed in
         app.config.from_mapping(test_config)
+    else:
+        # load the instance config when not testing
+        app.config.from_object(config[env])
 
 
 def check_app_config(app):

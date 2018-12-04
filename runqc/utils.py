@@ -80,7 +80,7 @@ def get_run_qcreport_data(project_name, run_dir,
     """
     run_base = os.path.basename(run_dir)
     current_app.logger.info('Getting QCreport data: %s', run_dir)
-    data_header = 'GT_QC_Sample_ID,Sample_Name'
+    data_header = 'GT_QC_Sample_ID,'
     qcr_lines = []
     qcr_rows = []
     try:

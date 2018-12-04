@@ -115,7 +115,7 @@ footer { /* page tail fixed at bottom of screen */
   position        : sticky;
   z-index         : 50;
   top             : 0;
-  margin          : 0 -15px !important;
+  margin          : 0 0 0 -15px !important;
   font-size       : var(--medium);
   background-color: var(--bgr-detail) !important;
   color           : var(--clr-night) !important;

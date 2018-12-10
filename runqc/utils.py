@@ -74,29 +74,26 @@ def read_file_text(filename: Path):
 
 def get_run_qcreport_data(project_name, run_dir,
                           qcreport_glob='*_QCreport*.csv',
-                          qcreport_data_suffix='_QCreport.data.csv'):
+                          qcreport_data_suffix='.data.csv',
+                          data_header = 'GT_QC_Sample_ID,'):
     """Return run Qcreport data file if exists,
     else parse the actual data lines after row starting 'GT_QC_Sample_ID'
     """
     run_base = os.path.basename(run_dir)
     current_app.logger.info('Getting QCreport data: %s', run_dir)
-    data_header = 'GT_QC_Sample_ID,'
     qcr_lines = []
     qcr_rows = []
     try:
         run_path = Path(run_dir)
-        # current_app.logger.debug('qcreport. run_path: %s', run_path)
-        qcr_data_file = ''.join([ project_name, qcreport_data_suffix])
-        qcr_data_path = os.path.join(run_dir, qcr_data_file)
-        # current_app.logger.debug('qcr_data_file: %s', qcr_data_file)
-        qc_reports = run_path.glob(qcreport_glob)
-        # current_app.logger.debug('qcreports: %s', qc_reports)
-        for f in qc_reports:
-            if f.match(qcreport_data_suffix):
-                current_app.logger.info('QCreport data file found: %s', run_info)
-                return f.resolve()
+        for f in run_path.glob(qcreport_glob):
+            # current_app.logger.debug('.....QCreport file: %s', f.name)
+            if f.match('*'+qcreport_data_suffix):
+                current_app.logger.info('QCreport data file found: %s', f.name)
+                return f.name
             elif f.is_file():
                 qcr_lines = read_file_text(f)
+                qcr_data_file = f.name[:-4]+qcreport_data_suffix
+                qcr_data_path = os.path.join(run_dir, qcr_data_file)
 
         try:
             for index, row in enumerate(qcr_lines):
@@ -105,21 +102,22 @@ def get_run_qcreport_data(project_name, run_dir,
                     qcr_rows = os.linesep.join(qcr_lines[index:])
                     break
             if qcr_rows:
+                current_app.logger.info('QCreport data will be written to file: %s', qcr_data_path)
                 with open(qcr_data_path, 'w') as qcd:
                     qcd.writelines(qcr_rows)
-                    current_app.logger.info('QCreport data now written to file: %s', qcr_data_path)
+                # current_app.logger.info('QCreport data will be read from file: %s', qcr_data_path)
                 with open(qcr_data_path, 'r') as qcd:
                     qcd = qcd.readlines()
                     if len(qcd) == len(qcr_rows):
                         current_app.logger.info('QCreport data successfully read-checked.')
         except Exception as e:
-            current_app.logger.error('QCreport data row reading issues: %s', run_dir)
+            current_app.logger.exception('QCreport data row reading issues: %s', run_dir)
             raise e
     except Exception as e:
-        current_app.logger.error('QCreport data file issues: %s', run_dir)
+        current_app.logger.exception('QCreport data file issues: %s', run_dir)
         raise e
     finally:
-        return qcr_data_path
+        return qcr_data_file
 
 
 def get_run_info_json(run_dir, json_filename):

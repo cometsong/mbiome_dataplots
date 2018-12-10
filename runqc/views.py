@@ -127,6 +127,7 @@ def run_details(run_path, subitem=''):
 
         # check if files being linked to exist (yet)
         run_metric_csv = get_file_paths(run_abspath, 'Run_Metric_*.csv', name_only=True)
+        if run_metric_csv: run_metric_csv = run_metric_csv[0]
 
         read_count_sheets = get_file_paths(run_abspath,
                                 '[Ss]amples_[Rr]ead_[Cc]ount*.*', name_only=True)

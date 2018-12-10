@@ -67,7 +67,7 @@
   <div class="csv" id="run_metric_csv"></div>
   <script>
     CsvToHtmlTable.init({
-      csv_path: 'Run_Metric_Summary_{{gt_project}}.csv',
+      csv_path: '{{run_metric_csv}}',
       element: 'run_metric_csv',
       allow_download: true,
       csv_options: {separator: ',', delimiter: '"'},
@@ -93,7 +93,7 @@
   <div class="csv" id="qcreport_csv"></div>
   <script>
     CsvToHtmlTable.init({
-      csv_path: '{{gt_project}}_QCreport.data.csv',
+      csv_path: '{{qcreport_data}}',
       element: 'qcreport_csv',
       allow_download: true,
       csv_options: {separator: ',', delimiter: '"'},

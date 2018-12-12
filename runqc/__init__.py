@@ -62,6 +62,24 @@ def configure_extensions(app):
     # AutoIndex(app, browse_root=app.config['RUN_DATASETS'])
 
 
+def all_routes(app, sort=True):
+    import urllib
+    routes = {}
+    for rule in app.url_map.iter_rules():
+        args = str([x for x in rule.arguments])
+        methods = str(rule.methods).replace(' ','').replace("'",'')
+        line = urllib.parse.unquote("{}, {}, {}".format(methods, rule.endpoint, args))
+        app.logger.debug('route: %s -> %s', rule.rule, line)
+        routes[rule.rule] = line
+    
+    if sort:
+        sorted_routes = {}
+        for k in sorted([k for k in routes.keys()]):
+            sorted_routes[k] = routes[k]
+        return sorted_routes
+    return routes
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Create the App ~~~~~
 ENV = os.environ.get('FLASK_ENV', 'default')
 
@@ -109,9 +127,12 @@ def create_app(test_config:dict={}):
                    }
         app_config = {k:str(v) for k, v in app.config.items()}
 
+        routes = all_routes(app)
+
         return jsonify(
             env=env_items,
             app_info=app_info,
+            routes=routes,
             app_config=app_config,
             )
 

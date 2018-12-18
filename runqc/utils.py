@@ -220,6 +220,7 @@ def run_metrics_run_info(run_path: Path, run_metrics_glob='Run_Metric_*.csv'):
             # 'ProjectSeqRequestDate': 'Run Request Date', 
             'MachineID':             'Machine ID',
             'Reads(M)':              'Reads (M)',
+            'ReadsPF (M)':           'Reads PF (M)',
             'TotalYield(Gb)':        'Total Yield (Gb)',
             'LoadingConc.(pM)':      'Loading Conc. (pM)',
             'Density':               'Cluster Density',

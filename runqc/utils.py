@@ -79,10 +79,11 @@ def get_run_qcreport_data(project_name, run_dir,
     """Return run Qcreport data file if exists,
     else parse the actual data lines after row starting 'GT_QC_Sample_ID'
     """
-    run_base = os.path.basename(run_dir)
     current_app.logger.info('Getting QCreport data: %s', run_dir)
     qcr_lines = []
     qcr_rows = []
+    qcr_data_file = ""
+    qcr_data_path = ""
     try:
         run_path = Path(run_dir)
         for f in run_path.glob(qcreport_glob):
@@ -110,14 +111,17 @@ def get_run_qcreport_data(project_name, run_dir,
                     qcd = qcd.readlines()
                     if len(qcd) == len(qcr_rows):
                         current_app.logger.info('QCreport data successfully read-checked.')
+                    else:
+                        current_app.logger.error('QCreport data not read successfully??')
         except Exception as e:
             current_app.logger.exception('QCreport data row reading issues: %s', run_dir)
             raise e
+        finally:
+            current_app.logger.debug('QCreport data file: %s', qcr_data_file)
+            return qcr_data_file
     except Exception as e:
         current_app.logger.exception('QCreport data file issues: %s', run_dir)
         raise e
-    finally:
-        return qcr_data_file
 
 
 def get_run_info_json(run_dir, json_filename):

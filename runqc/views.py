@@ -123,6 +123,7 @@ def run_details(run_path, subitem=''):
         try:
             qcreport_data = get_run_qcreport_data(gt_project, run_abspath)
         except Exception as e:
+            qcreport_data = None
             current_app.logger.exception('issues reading QCreport data for run: %s', run_path) #TODO: is 'run_path var type 'Path' ??
 
         # check if files being linked to exist (yet)

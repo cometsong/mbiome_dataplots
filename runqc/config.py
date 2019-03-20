@@ -74,6 +74,7 @@ class TestingConfig(Config):
     SQLALCHEMY_RECORD_QUERIES = "True"
     SQLALCHEMY_ECHO = "True"
     APPLICATION_ROOT = get_env("FLASK_APP_ROOT", "/run_qc_testing")
+    RUN_DATASETS = get_env("FLASK_APP_RUN_DATASETS", '/tmp/run_qc_testing')
 
 
 config = {

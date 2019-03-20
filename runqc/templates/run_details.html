@@ -4,8 +4,7 @@
 
 <header>
   {% block header %}
-  {{ super() }}
-  QC Info for "{{run_name}}"
+  {{ super() }} QC Info for "{{run_name}}"
   <s><a href="{{ url_for('.run_list') }}" class="indent strong">Up to Run QC List</a></s>
   {% endblock header %}
 </header>

@@ -7,3 +7,6 @@
   {% if in_div -%}</div>{% endif %}
 {%- endmacro %}
 
+{% macro static_url(filepath) %}
+  {{ url_for('static', filename=filepath) }}
+{%- endmacro %}

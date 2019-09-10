@@ -1,4 +1,4 @@
-{#% extends "meta.html" %#}
+{% from 'macros.html' import static_url %}
 <!DOCTYPE HTML>
 <html lang="en">
   <head>
@@ -6,26 +6,25 @@
     {% include "meta.html" ignore missing %}
     {% endblock meta %}
     {% block head %}
-    <link rel="icon" href="{{ url_for('static', filename='images/mu-letter-blue.ico') }}" type="image/x-icon">
-    <!--<base href="{{request.url_root}}">-->
+    <link rel="icon" href="{{ static_url('images/mu-letter-blue.ico') }}" type="image/x-icon">
     <base href="{{request.base_url}}">
 
     <!-- third party core -->
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/dataTables.bootstrap.css') }}" rel="stylesheet">
+    <script src="{{ static_url('js/jquery.min.js') }}"></script>
+    <script src="{{ static_url('js/bootstrap.min.js') }}"></script>
+    <link href="{{ static_url('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
     <!-- dataTables -->
-    <script src="{{ url_for('static', filename='js/jquery.csv.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dataTables.bootstrap.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/csv_to_html_table.js') }}"></script>
-    <link href="{{ url_for('static', filename='css/dataTables.bootstrap.css') }}" rel="stylesheet">
+    <script src="{{ static_url('js/jquery.csv.js') }}"></script>
+    <script src="{{ static_url('js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ static_url('js/dataTables.bootstrap.js') }}"></script>
+    <script src="{{ static_url('js/csv_to_html_table.js') }}"></script>
+    <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
     <!-- run_qc -->
-    <!--<script src="{{ url_for('static', filename='js/run_qc_info.js') }}"></script>-->
-    <link href="{{ url_for('static', filename='css/run_qc_info.css') }}" rel="stylesheet" type="text/css" media="screen"/>
+    {# <script src="{{ static_url('js/run_qc_info.js') }}"></script> #}
+    <link href="{{ static_url('css/run_qc_info.css') }}" rel="stylesheet" type="text/css" media="screen"/>
     {% endblock head %}
 
     <title>{% block title %}Mbiome Core Sequencer Run QC{% endblock title %}</title>
@@ -33,7 +32,7 @@
   <body data-spy="scroll" data-target=".navbar" data-offset="40">
     <header>
       {% block header %}
-      <img src="/static/images/mu-letter-blue.png" height="25px">
+      <img src="{{ static_url('images/mu-letter-blue.png') }}" height="25px">
       MicrobiomeCore Run{% endblock header %}
     </header>
     {% block topmenu %}

@@ -2,150 +2,149 @@
 {% from 'macros.html' import dict_to_table %}
 <title>{% block title %}RunQC: {{run_name }}{% endblock title %}</title>
 
-<header>
-  {% block header %}
+<header>{% block header -%}
   {{ super() }} QC Info for "{{run_name}}"
   <s><a href="{{ url_for('.run_list') }}" class="indent strong">Up to Run QC List</a></s>
   {% endblock header %}
 </header>
 
 {% block content %}
-<section id="run_info">
-  <h2>Run Info</h2>
-  <div class="column">
+  <section id="run_info">
+    <h2>Run Info</h2>
+    <div class="column">
       <div class="table indent" id="infos">
-          {% for key,val in run_spec.items() %}
-          <rp><b>{{key}}</b><b>{{val}}</b></rp>
-          {% else %}
-          <rp><b><em>No Run Info Found</em></b></rp>
-          {% endfor %}
+        {% for key,val in run_spec.items() -%}
+        <rp><b>{{key}}</b><b>{{val}}</b></rp>
+        {% else %}
+        <rp><b><em>No Run Info Found</em></b></rp>
+        {%- endfor -%}
       </div>
-  </div>
-</section>
+    </div>
+  </section>
 
-<section id="fastqc">
-{% if fastqc_stats %}
-  <div class="column">
-    <h2>FastQC Analysis</h2>
-    {{ dict_to_table(fastqc_stats) }}
-  </div>
-{% endif %}
-  <div class="column">
-    <h2>FastQC files</h2>
+  <section id="fastqc">
+    {%- if fastqc_stats %}
+    <div class="column">
+      <h2>FastQC Analysis</h2>
+      {{ dict_to_table(fastqc_stats) }}
+    </div>
+    {%- endif %}
+    <div class="column">
+      <h2>FastQC files</h2>
+      <ul>
+        <li><a href="fastqc">list of FastQC results</a></li>
+      </ul>
+    </div>
+  </section>
+
+  {% if read_dist_images -%}
+  <section id="read_dist">
+    <h2>Read Distribution</h2>
+    {% for image in read_dist_images -%}
+    <a href="{{image}}" class="img" download><img src="{{image}}" alt="Plot {{image}}" ></a>
+    {%- endfor %}
+    {%- endif %}
+
+    {% if read_count_sheets -%}
+    <h2>Samples' Read Count Spreadsheet
+      <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
+    </h2>
     <ul>
-      <li><a href="fastqc">list of FastQC results</a></li>
+      {% for sheet in read_count_sheets -%}
+      <li>
+        <a href="{{sheet}}" download>Download spreadsheet "{{sheet}}"</a>
+      </li>
+      {%- endfor %}
     </ul>
-  </div>
-</section>
+  </section>
+  {%- endif %}
 
-{% if read_dist_images %}
-<section id="read_dist">
-  <h2>Read Distribution</h2>
-  {% for image in read_dist_images %}
-  <a href="{{image}}" class="img" download><img src="{{image}}" alt="Plot {{image}}" ></a>
-  {% endfor %}
-{% endif %}
+  {% if run_metric_csv -%}
+  <section id="run_metric">
+    <h2>Run Metrics</h2>
+    <div class="csv" id="run_metric_csv"></div>
+    <script>
+      CsvToHtmlTable.init({
+        csv_path: '{{run_metric_csv}}',
+        element: 'run_metric_csv',
+        allow_download: true,
+        csv_options: {separator: ',', delimiter: '"'},
+        datatables_options: {
+          "processing": true,
+            "paging": true,
+            "scrollX": "98%",
+            "pageLength": 11,
+            "lengthMenu": [ [11, 20, 40, -1], [10, 20, 40, "All"] ],
+            "order": [],
+            "ordering": false,
+        }
+      });
+    </script>
+  </section>
+  {%- endif %}
 
-{% if read_count_sheets %}
-  <h2>Samples' Read Count Spreadsheet
-    <b class="indented_note">Number of reads listed here is total number of reads in both directions.</b>
-  </h2>
-  <ul>
-    {% for sheet in read_count_sheets %}
-    <li>
-      <a href="{{sheet}}" download>Download spreadsheet "{{sheet}}"</a>
-    </li>
-    {% endfor %}
-  </ul>
-</section>
-{% endif %}
+  {% if qcreport_data -%}
+  <section id="qcreport">
+    <h2>QC Report
+      <b class="indented_note">Number of reads shown here is number of read pairs.</b>
+    </h2>
+    <div class="csv" id="qcreport_csv"></div>
+    <script>
+      CsvToHtmlTable.init({
+        csv_path: '{{qcreport_data}}',
+        element: 'qcreport_csv',
+        allow_download: true,
+        csv_options: {separator: ',', delimiter: '"'},
+        datatables_options: {
+          "processing": true,
+            "paging": true,
+            "scrollX": "98%",
+            "pageLength": 25,
+            "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
+            "lengthChange": true,
+            "rowId": "GT_QC_Sample_ID",
+            "order": [[ 1, 'asc' ], [ 3, 'desc' ]],
+        }
+      });
+    </script>
+  </section>
+  {%- endif %}
 
-{% if run_metric_csv %}
-<section id="run_metric">
-  <h2>Run Metrics</h2>
-  <div class="csv" id="run_metric_csv"></div>
-  <script>
-    CsvToHtmlTable.init({
-      csv_path: '{{run_metric_csv}}',
-      element: 'run_metric_csv',
-      allow_download: true,
-      csv_options: {separator: ',', delimiter: '"'},
-      datatables_options: {
-        "processing": true,
-          "paging": true,
-          "scrollX": "98%",
-          "pageLength": 11,
-          "lengthMenu": [ [11, 20, 40, -1], [10, 20, 40, "All"] ],
-          "order": [],
-          "ordering": false,
-      }
-    });
-  </script>
-</section>
-{% endif %}
+  {% if control_assems -%}
+  <section id="ctrl_assem">
+    <h2>Positive Control Assembly Info</h2>
+    {% for name,item in control_assems.items() -%}
+    {% if item is defined -%}
+    {% set NAME = name|replace('_stats','')|replace('_plot','')|upper %}
+    {% if '_stats' in name -%}
+    {% if item is mapping -%}
+    <div class="column">
+      <h4>{{NAME}} Assembly Summary Statistics</h4>
+      {{ dict_to_table(item) }}
+    </div>
+    {%- endif %}{# mapping #}
+    {%- elif '_plot' in name %}
+    <div class="column">
+      <h4>{{NAME}} Assembly Accuracy Plot</h4>
+      <a href="{{item}}" class="img" download><img src="{{item}}" alt="Plot {{item}}" ></a>
+    </div>
+    {%- endif %}{# stat|plot #}
+    {%- endif %}{# defined #}
+    {%- endfor %}
+  </section>
+  {%- endif %}
 
-{% if qcreport_data %}
-<section id="qcreport">
-  <h2>QC Report
-  <b class="indented_note">Number of reads shown here is number of read pairs.</b>
-  </h2>
-  <div class="csv" id="qcreport_csv"></div>
-  <script>
-    CsvToHtmlTable.init({
-      csv_path: '{{qcreport_data}}',
-      element: 'qcreport_csv',
-      allow_download: true,
-      csv_options: {separator: ',', delimiter: '"'},
-      datatables_options: {
-        "processing": true,
-          "paging": true,
-          "scrollX": "98%",
-          "pageLength": 25,
-          "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
-          "lengthChange": true,
-          "rowId": "GT_QC_Sample_ID",
-          "order": [[ 1, 'asc' ], [ 3, 'desc' ]],
-      }
-    });
-  </script>
-</section>
-{% endif %}
+  {% if pipe_16S_qc_plots -%}
+  <section id="pipe_16S">
+    <h2>Read Counts from 16S Pipeline
+      <b class="indented_note">Shown in these plots is number of reads removed in each step of the 16S pipeline, plus starting and final count.</b>
+    </h2>
+    {% autoescape false -%}
+    {% for plotname, plot in pipe_16S_qc_plots.items() -%}
+    {{plot}}
+    {%- endfor %}
+    {%- endautoescape %}
+  </section>
+  {%- endif %}
 
-{%- if control_assems %}
-<section id="ctrl_assem">
-  <h2>Positive Control Assembly Info</h2>
-  {% for name,item in control_assems.items() %}
-    {% if item is defined %}
-      {% set NAME = name|replace('_stats','')|replace('_plot','')|upper %}
-      {% if '_stats' in name %}
-        {% if item is mapping %}
-        <div class="column">
-          <h4>{{NAME}} Assembly Summary Statistics</h4>
-          {{ dict_to_table(item) }}
-        </div>
-        {% endif %}{# mapping #}
-      {% elif '_plot' in name %}
-      <div class="column">
-        <h4>{{NAME}} Assembly Accuracy Plot</h4>
-        <a href="{{item}}" class="img" download><img src="{{item}}" alt="Plot {{item}}" ></a>
-      </div>
-      {% endif %}{# stat|plot #}
-    {% endif %}{# defined #}
-  {% endfor %}
-</section>
-{% endif -%}
-
-{% if pipe_16S_qc_plots %}
-<section id="pipe_16S">
-  <h2>Read Counts from 16S Pipeline
-  <b class="indented_note">Shown in these plots is number of reads removed in each step of the 16S pipeline, plus starting and final count.</b>
-  </h2>
-  {% autoescape false %}
-    {% for plotname, plot in pipe_16S_qc_plots.items() %}
-      {{plot}}
-    {% endfor %}
-  {% endautoescape %}
-</section>
-{% endif %}
-
-{% endblock content %}
+{%- endblock content %}

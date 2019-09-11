@@ -1,62 +1,66 @@
 {% from 'macros.html' import static_url %}
 <!DOCTYPE HTML>
 <html lang="en">
-  <head>
-    {% block meta %}
-    {% include "meta.html" ignore missing %}
-    {% endblock meta %}
-    {% block head %}
-    <link rel="icon" href="{{ static_url('images/mu-letter-blue.ico') }}" type="image/x-icon">
-    <base href="{{request.base_url}}">
+<head>
+  {% block meta -%}
+  {% include "meta.html" ignore missing %}
+  {%- endblock meta -%}
 
-    <!-- third party core -->
-    <script src="{{ static_url('js/jquery.min.js') }}"></script>
-    <script src="{{ static_url('js/bootstrap.min.js') }}"></script>
-    <link href="{{ static_url('css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
+  {% block head %}
+  <link rel="icon" href="{{ static_url('images/mu-letter-blue.ico') }}" type="image/x-icon">
+  <base href="{{request.base_url}}">
 
-    <!-- dataTables -->
-    <script src="{{ static_url('js/jquery.csv.js') }}"></script>
-    <script src="{{ static_url('js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ static_url('js/dataTables.bootstrap.js') }}"></script>
-    <script src="{{ static_url('js/csv_to_html_table.js') }}"></script>
-    <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
+  <!-- third party core -->
+  <script src="{{ static_url('js/jquery.min.js') }}"></script>
+  <script src="{{ static_url('js/bootstrap.min.js') }}"></script>
+  <link href="{{ static_url('css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
-    <!-- run_qc -->
-    {# <script src="{{ static_url('js/run_qc_info.js') }}"></script> #}
-    <link href="{{ static_url('css/run_qc_info.css') }}" rel="stylesheet" type="text/css" media="screen"/>
-    {% endblock head %}
+  <!-- dataTables -->
+  <script src="{{ static_url('js/jquery.csv.js') }}"></script>
+  <script src="{{ static_url('js/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ static_url('js/dataTables.bootstrap.js') }}"></script>
+  <script src="{{ static_url('js/csv_to_html_table.js') }}"></script>
+  <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
-    <title>{% block title %}Mbiome Core Sequencer Run QC{% endblock title %}</title>
-  </head>
-  <body data-spy="scroll" data-target=".navbar" data-offset="40">
-    <header>
-      {% block header %}
-      <img src="{{ static_url('images/mu-letter-blue.png') }}" height="25px">
-      MicrobiomeCore Run{% endblock header %}
-    </header>
-    {% block topmenu %}
-    <nav class="navbar navbar-default topmenu">
+  <!-- run_qc -->
+  {#- <script src="{{ static_url('js/run_qc_info.js') }}"></script> #}
+  <link href="{{ static_url('css/run_qc_info.css') }}" rel="stylesheet" type="text/css" media="screen"/>
+  {%- endblock head -%}
+
+  <title>{% block title -%}Mbiome Core Sequencer Run QC{%- endblock title %}</title>
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="40">
+
+  <header>
+    {%- block header %}
+    <img src="{{ static_url('images/mu-letter-blue.png') }}" height="25px">
+    MicrobiomeCore Run
+    {%- endblock header -%}
+  </header>
+  
+  {% block topmenu -%}
+  <nav class="navbar navbar-default topmenu">
     <div class="container-fluid">
-        <ul class="nav navbar-nav">
-            <li><a href="#run_info"   >Run Info</a></li>
-            <li><a href="#fastqc"     >FastQC</a></li>
-            {% if read_dist_images %}  <li><a href="#read_dist"  >Read Distribution</a></li> {% endif %}
-            {% if run_metric_csv %}    <li><a href="#run_metric" >Run Metrics <s>(GT)</s></a></li> {% endif %}
-            {% if qcreport_data %}     <li><a href="#qcreport"   >Sample QC Report <s>(GT)</s></a></li> {% endif %}
-            {% if control_assems %}    <li><a href="#ctrl_assem" >Control Assembly <s>Accuracy</s></a></li> {% endif %}
-            {% if pipe_16S_qc_plots %} <li><a href="#pipe_16S"   >16S Read Counts <s>pipeline</s></a></li> {% endif %}
-        </ul>
+      <ul class="nav navbar-nav">
+        <li><a href="#run_info"   >Run Info</a></li>
+        <li><a href="#fastqc"     >FastQC</a></li>
+        {% if read_dist_images -%}  <li><a href="#read_dist"  >Read Distribution</a></li> {% endif %}
+        {% if run_metric_csv -%}    <li><a href="#run_metric" >Run Metrics <s>(GT)</s></a></li> {% endif %}
+        {% if qcreport_data -%}     <li><a href="#qcreport"   >Sample QC <s>(GT)</s></a></li> {% endif %}
+        {% if control_assems -%}    <li><a href="#ctrl_assem" >Controls Assemblies</a></li> {% endif %}
+        {% if pipe_16S_qc_plots -%} <li><a href="#pipe_16S"   >16S Read Counts</a></li> {% endif %}
+      </ul>
     </div>
-    </nav>
-    {% endblock topmenu %}
+  </nav>
+  {%- endblock topmenu %}
 
-    {% block content %}{% endblock content %}
+  {% block content %}{% endblock content %}
 
-    <footer>
-      {% block footer %}
-      <p>&copy; Copyright 2018 MicrobiomeCore</p>
-      {% endblock footer %}
-    </footer>
-  </body>
+  <footer>
+    {% block footer -%}
+    <p>&copy; Copyright 2018-2019 MicrobiomeCore</p>
+    {%- endblock footer %}
+  </footer>
+</body>
 </html>

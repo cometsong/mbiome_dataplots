@@ -12,14 +12,21 @@ else
    with_submodules='--recurse-submodules';
 fi
 
-git checkout ${production_branch} && \
-    git pull \
-    --verbose --no-edit --tags ${with_submodules} \
-    ${development_repo} ${development_branch}
+git checkout
+    ${production_branch} \
+    && \
+git pull \
+    --verbose \
+    --no-edit \
+    --tags \
+    ${with_submodules} \
+    ${development_repo} \
+    ${development_branch}
 
 
 # check pip_installs match 1, [Yy]es, [Tt]rue
-if [ $? -eq 0  -a  $(expr $pip_installs : '^[1YyTt].*') -gt 0 ]; then
+if [ $? -eq 0  -a \
+    $(expr $pip_installs : '^[1YyTt].*') -gt 0 ]; then
   #pip install -q -r requirements.txt
   pip install -r requirements.txt
 fi

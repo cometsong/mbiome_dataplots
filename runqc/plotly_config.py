@@ -5,7 +5,7 @@ logging.basicConfig(format=log_format, level=logging.DEBUG)
 
 plotly_config = {}
 try:
-    log.info('defining plotly.js config')
+    # log.info('defining plotly.js config')
     plotly_config={
         # 'plotlyServerURL': 'https://plot.ly',
         'plotlyServerURL': 'https://mbiomecore',
@@ -52,7 +52,7 @@ try:
         'locale': 'en-US',
         'locales': {}
     }
-    log.debug('plotly config defined')
+    # log.debug('plotly config defined')
 except Exception as e:
     log.exception('plotly config dict NOT defined')
     raise e

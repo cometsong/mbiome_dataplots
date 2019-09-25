@@ -65,6 +65,7 @@ def run_details(run_path, subitem=''):
     try:
         # Snag that subitem time!
         if subitem:
+            current_app.logger.info('Getting details for subitem: %s', subitem)
             if subitem.endswith('/'):
                 pathtype = 'folder'
                 # current_app.logger.debug('subitem type: %s', pathtype)

@@ -1,14 +1,17 @@
 import logging
+
 log = logging.getLogger('plotly_config')
 log_format = '%(levelname)s in "%(name)s" on %(lineno)d: %(message)s'
 logging.basicConfig(format=log_format, level=logging.DEBUG)
+
+default_image_format = 'svg'
 
 plotly_config = {}
 try:
     # log.info('defining plotly.js config')
     plotly_config={
         # 'plotlyServerURL': 'https://plot.ly',
-        'plotlyServerURL': 'https://mbiomecore',
+        'plotlyServerURL': 'https://mbiomecore/run_qc',
         'staticPlot': False,
         'editable': True,
         'edits': {
@@ -41,7 +44,10 @@ try:
         'modeBarButtonsToRemove': [],
         'modeBarButtonsToAdd': [],
         'modeBarButtons': False,
-        'toImageButtonOptions': {},
+        'toImageButtonOptions': {
+            'format': default_image_format,
+            'scale': 1.0,
+        },
         'displaylogo': False,
         'plotGlPixelRatio': 2,
         'setBackground': 'transparent',

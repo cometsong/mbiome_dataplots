@@ -99,7 +99,7 @@
           "processing": true,
             "paging": true,
             "scrollX": "98%",
-            "pageLength": 25,
+            "pageLength": 10,
             "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "All"] ],
             "lengthChange": true,
             "rowId": "GT_QC_Sample_ID",
@@ -127,7 +127,7 @@
     <div class="column">
       <h4>{{NAME}} Assembly Accuracy Plot</h4>
       <a href="{{item}}" class="img" download><img src="{{item}}" alt="Plot {{item}}" ></a>
-    </div>
+    </div><br/>
     {%- endif %}{# stat|plot #}
     {%- endif %}{# defined #}
     {%- endfor %}

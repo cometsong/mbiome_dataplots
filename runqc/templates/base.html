@@ -23,6 +23,12 @@
   <script src="{{ static_url('js/csv_to_html_table.js') }}"></script>
   <link href="{{ static_url('css/dataTables.bootstrap.css') }}" rel="stylesheet">
 
+  {% if include_plotly
+     or pipe_16S_qc_plots -%}
+  <!-- plotly.js -->
+  <script src="{{ static_url('js/plotly.min.js') }}" charset="utf-8"></script>
+  {% endif %}
+
   <!-- run_qc -->
   {#- <script src="{{ static_url('js/run_qc_info.js') }}"></script> #}
   <link href="{{ static_url('css/run_qc_info.css') }}" rel="stylesheet" type="text/css" media="screen"/>

@@ -307,6 +307,8 @@ def get_file_paths(folder, fileglob="*", name_only=False):
         # current_app.logger.debug('get_file_paths files: %s', str(files))
         return files
     except:
+        msg = f'!! Error file "{fileglob}" not found!'
+        current_app.logger.error(msg)
         return False
 
 

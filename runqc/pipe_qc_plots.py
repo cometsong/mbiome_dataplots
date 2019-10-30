@@ -176,7 +176,7 @@ def figure_layout(title='', xtitle='', ytitle='', rows=1, cols=1):
 def plot_bar_chart(fp, df):
     """create bar chart from passed dataframe, then save result in fp.parent
     params:
-        fp: APath of data file
+        fp: Path of data file
         df: pandas dataframe
     """
     try:
@@ -381,7 +381,7 @@ def plot_bar_chart(fp, df):
 def plot_scatter_chart(fp, df, name=''):
     """create scatter chart from passed dataframe, return list of resulting traces.
     params:
-        fp:  APath of data file
+        fp:  Path of data file
         df:  pandas dataframe
         name: trace name (in legend)
     """
@@ -513,7 +513,7 @@ def plot_spike_pcts(run_path, compare_columns=[]):
        then create scatter plots from the tsv data within.
        Return the plotly-specific interactive output, or only the svg data.
        params:
-         run_path: APath of sequencer run
+         run_path: Path of sequencer run
          compare_columns list: [colname, col2, ...] to compare by division
     """
     log.info('Plotting 16S pipeline pct reads of spikes')

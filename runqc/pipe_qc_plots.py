@@ -529,18 +529,18 @@ def plot_spike_pcts(run_path, compare_columns=[]):
             raise e
 
         try:
+            if fpaths:
+                log.debug('scatter_chart: gonna make figure')
+                fig = make_subplots(rows=(len(fpaths)), cols=1)
+            else:
+                log.debug('scatter_chart: no files found')
+                return plot_map
+
             # pipe tsv's have no header line e.g. data:
             # AZMA_J00T4S_1_XC...	OTU_Allobacillus	.13651877133105802000%	21	21340
             #TODO: extra hack of three zymo spikes: ignore 'OTU_Trupera' bc extracts poorly
             colnames = ['SampleName', 'SpikeName', 'PctReads', 'SpikeReads', 'TotalReads']
             log.debug('plot_spikes: colnames=%s', str(colnames))
-
-            try:
-                log.debug('scatter_chart: gonna make figure')
-                fig = make_subplots(rows=(len(fpaths)), cols=1)
-            except Exception as e:
-                log.exception('scatter_chart: figure')
-                raise e
 
             for fp in fpaths:
                 # index_col: use SampleName as .Index

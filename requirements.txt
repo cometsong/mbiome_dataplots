@@ -1,13 +1,17 @@
-Flask==1.0.2
-Flask-SQLAlchemy==2.3.2
+### base 
+Flask == 1.0.2
 
-plotly==3.1.1
-pandas==0.23.4
+### data and display
+plotly >= 4.1.1
+pandas >= 0.24.2
+Flask-SQLAlchemy
 
-pytest==3.7.4
-watchdog==0.8.3
-jedi==0.12.1
+## tests and development
+pytest >= 4
+jedi >= 0.15
 
-# Flask-AutoIndex==0.6.1
-# Flask-FlatPages==0.6
-# Flask-Silk==0.2
+### maybe later
+watchdog
+# Flask-AutoIndex
+# Flask-FlatPages
+# Flask-Silk

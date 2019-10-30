@@ -367,15 +367,12 @@ def calc_read_diffs(df_orig, columns=[]):
         return diff_df
 
 
-def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonhost'):
+def plot_16S_read_counts(run_path, flowcell=None, sort_by='nonhost'):
     """if 16S pipeline's log of number of reads deleted from each step exists,
        then create plots from the csv data within.
        Return the plotly-specific interactive output, or only the svg data.
     """
     log.info('Plotting 16S pipeline QC')
-    if not svg_only:
-        interactive = True
-    # pre-create dict of file paths:
     plot_map = {} # e.g. {'file.name': 'path to plotly output html file or svg image'}
     try:
         # check file(s) exist / find files by glob suffix .csv
@@ -395,7 +392,6 @@ def plot_16S_read_counts(run_path, flowcell=None, svg_only=False, sort_by='nonho
             colnames = ['Sample_Name'] + readcnts
             log.debug('plot_16S: colnames=%s', str(colnames))
             for fp in fpaths:
-                #read_csv skiprows lambda skips any rows with empty value for sample_name
                 df_read = pd.read_csv(fp, header=0, names=colnames, index_col=0)
                 # replace non-numeric values e.g. 'Missing' with zeros
                 df = df_read.replace(regex='^.*[^\d].*$', value='0')

@@ -42,7 +42,7 @@ def find_pipeline_qc_files(folder_path, fileglob=PIPELINE_FILE_GLOB):
         log.info('Finding pipeline QC files')
         pipe_files = get_file_paths(folder_path, fileglob=fileglob)
     except Exception as e:
-        log.exception('Issues finding pipeline files in "%s"', run_path)
+        log.exception('Issues finding pipeline files in "%s"', folder_path)
         raise e
     else:
         log.debug('found %s pipeline qc files', len(pipe_files))

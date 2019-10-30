@@ -49,8 +49,8 @@ def run_list():
 
 
 # @run_info.route('/<path:run_path>/(<subitem>.+)?', defaults={'subitem': ''})
-@run_info.route('/<run_path>/', strict_slashes=True, defaults={'subitem': ''})
-@run_info.route('/<run_path>/<subitem>')
+@run_info.route('/<path:run_path>/', strict_slashes=True, defaults={'subitem': ''})
+@run_info.route('/<path:run_path>/<path:subitem>')
 # @check_run_info_json(run_path)
 def run_details(run_path, subitem=''):
     datasets = current_app.config['RUN_DATASETS']

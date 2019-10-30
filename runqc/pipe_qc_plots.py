@@ -174,11 +174,15 @@ def figure_layout(title='', xtitle='', ytitle='', rows=1, cols=1):
 
 
 def plot_bar_chart(fp, df):
-    """create bar chart from passed dataframe, then save result in fp.parent"""
+    """create bar chart from passed dataframe, then save result in fp.parent
+    params:
+        fp: APath of data file
+        df: pandas dataframe
+    """
     try:
         log.info('Creating bar chart for %s', fp.name)
 
-        image_name = fp.stem + '.svg'
+        image_name = fp.stem #+ '.svg'
         file_name = fp.stem + '.html'
         # log.debug('bar_chart: image: %s, file: %s', image_name, file_name)
 
@@ -358,15 +362,8 @@ def plot_bar_chart(fp, df):
                                                        # 'sendDataToCloud',
                                                        'lasso']
 
-            plot = ply.plot(fig,
-                            auto_open = False,
-                            image = 'svg',
-                            # image_height = '100%',
-                            output_type = 'div',
-                            image_filename = image_name,
-                            filename = file_name,
-                            config = plotly_config,
-                            )
+            plot_opts['config']['toImageButtonOptions']['filename'] = image_name
+            plot = ply.plot(fig, **plot_opts)
             # log.debug('bar_chart: made bar plot!')
             # log.debug('bar_chart: plots: %s', str(plots))
 

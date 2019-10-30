@@ -4,7 +4,10 @@ from pathlib import PosixPath as Path
 from flask import Blueprint, current_app, json
 from flask import make_response, render_template, redirect, request, send_from_directory
 
-from runqc.pipe_qc_plots import plot_16S_read_counts
+from runqc.pipe_qc_plots import (
+    plot_16S_read_counts,
+    plot_spike_pcts,
+)
 from runqc.utils import \
     make_tree, \
     get_run_info_json, \
@@ -170,10 +173,19 @@ def run_details(run_path, subitem=''):
             pear_accuracy_img = pear_accuracy_img[0]
             control_assems['pear_plot'] = pear_accuracy_img
 
+        # check for 16S QC read counts
         try:
             pipe_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
         except Exception as e:
             current_app.logger.exception('issues plotting bar charts for run: %s', run_path)
+
+        # check for 16S samples' percent spike reads
+        try:
+            pipe_16S_spike_pcts = plot_spike_pcts(run_abspath, flowcell)
+            #FIXME: remove? pipe_16S_spike_scat = plot_spike_comparisons(run_abspath, flowcell)
+        except Exception as e:
+            current_app.logger.exception('issues plotting charts for run spike reads: %s', run_path)
+
     except Exception as e:
         current_app.logger.exception('issues generating run_details: %s', run_path)
         raise e
@@ -191,6 +203,7 @@ def run_details(run_path, subitem=''):
         'read_dist_images': read_dist_images,
         'control_assems': control_assems,
         'pipe_16S_qc_plots': pipe_16S_qc_plots,
+        'pipe_16S_spikes': pipe_16S_spike_pcts,
     }
     # current_app.logger.debug('context: %s', vars)
     response = make_response(render_template('run_details.html', **vars))

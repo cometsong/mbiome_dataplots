@@ -135,7 +135,7 @@
   {%- endif %}
 
   {% if pipe_16S_qc_plots -%}
-  <section id="pipe_16S">
+  <section id="pipe_16S_qc">
     <h2>Read Counts from 16S Pipeline
       <b class="indented_note">Shown in these plots is number of reads removed in each step of the 16S pipeline, plus starting and final count.</b>
     </h2>
@@ -143,6 +143,17 @@
     {% for plotname, plot in pipe_16S_qc_plots.items() -%}
     {{plot}}
     {%- endfor %}
+    {%- endautoescape %}
+  </section>
+  {%- endif %}
+
+  {% if pipe_16S_spikes -%}
+  <section id="pipe_spikes">
+    <h2>Spike Percent Reads from 16S Pipeline</h2>
+    {% autoescape false -%}
+      {% for plotname, plot in pipe_16S_spikes.items() -%}
+      {{plot}}
+      {%- endfor %}
     {%- endautoescape %}
   </section>
   {%- endif %}

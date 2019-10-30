@@ -1,9 +1,10 @@
 from pathlib import PosixPath as Path
-import csv
 
 import pandas as pd
+import numpy as np
 import plotly.offline as ply
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 #TODO: "standardize" logging format and setup within the app?
 import logging
@@ -12,14 +13,24 @@ log_format = '%(levelname)s in "%(name)s" on %(lineno)d: %(message)s'
 logging.basicConfig(format=log_format, level=logging.DEBUG)
 
 from runqc.utils import get_file_paths
-from runqc.plotly_config import plotly_config
+from runqc.plotly_config import plotly_config #, orca_config
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Pipeline Globals ~~~~~
 PIPELINE_FILE_GLOB = 'pipe_16S_QC-*.csv'
+PIPELINE_PCTS_GLOB = 'pipe_16S_spike_pcts-*.tsv'
 
 # set float display to integer only, as no floats included in qc logs (default format = None)
 pd.options.display.float_format = '{:,.0f}'.format
+
+plot_opts = dict(
+    auto_open = False,
+    # image = 'svg', # only for automatic downloads
+    image_width = 1000,
+    output_type = 'div',
+    include_plotlyjs = False,
+    config = plotly_config,
+)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Plot Methods ~~~~~
 
@@ -132,6 +143,31 @@ def make_layout(title='', bgcolor='aliceblue', fontsize=12):
         # log.debug('made layout: %s', str(layout))
     except Exception as e:
         log.exception('make_layout NOT made!!')
+        raise e
+    else:
+        return layout
+
+
+def figure_layout(title='', xtitle='', ytitle='', rows=1, cols=1):
+    """return Layout to add to Figure subplots"""
+    try:
+        log.debug('fig_layout: gonna make layout')
+        layout = make_layout(title)
+        layout.showlegend = False
+
+        log.debug('fig_layout: gonna modify layout spec: xaxis')
+        layout.xaxis.update(dict(
+            title = xtitle,
+            showspikes = False,
+        ))
+
+        log.debug('fig_layout: gonna modify layout spec: yaxis')
+        layout.yaxis.update(dict(
+            title = ytitle,
+            showspikes = True,
+        ))
+    except Exception as e:
+        log.exception('fig_layout: layout NOT made')
         raise e
     else:
         return layout
@@ -345,6 +381,51 @@ def plot_bar_chart(fp, df):
        return plot
 
 
+def plot_scatter_chart(fp, df, name=''):
+    """create scatter chart from passed dataframe, return list of resulting traces.
+    params:
+        fp:  APath of data file
+        df:  pandas dataframe
+        name: trace name (in legend)
+    """
+    try:
+        log.info('Creating scatter chart for %s', fp.name)
+        try:
+            log.debug('scatter_chart: gonna make data traces')
+            colors = [
+                'LightSteelBlue', 'LightCoral', 'OliveDrab',
+                'Silver', 'YellowGreen', 'Chocolate',
+            ]
+            markers = {'color': colors[0],
+                       'size': 5,
+                       'symbol': "circle-dot",
+                       }
+            traces = []
+            for i in range(df.columns.size):
+                colname = df.columns[i]
+                # markers.update({'color':colors[i]})
+                log.debug('scatter_chart: column: %s', colname)
+                scat = go.Scatter(
+                    x = df.index,
+                    y = df[colname],
+                    mode = 'markers',
+                    hoverinfo = "x+y",
+                    marker = markers,
+                    marker_color = colors[i],
+                    name = name,
+                )
+                scat.marker.color = colors[i]
+                traces.append(scat)
+        except Exception as e:
+            log.exception('scatter_chart: data traces NOT made')
+            raise e
+        else:
+            return traces
+    except Exception as e:
+        log.exception('scatter_chart: plotting for file "%s"', fp.name)
+        raise e
+
+
 def calc_read_diffs(df_orig, columns=[]):
     """Caclulate differences between steps of pipeline, return new dataframe"""
     if not columns:
@@ -415,6 +496,123 @@ def plot_16S_read_counts(run_path, flowcell=None, sort_by='nonhost'):
                     log.exception('Issues plotting bar: file "%s" in "%s"', fp.name, run_path)
                 else:
                     plot_map[fp.stem] = fp_bar
+
+        except Exception as e:
+            log.exception('Issues plotting qc files in "%s"', run_path)
+            raise e
+
+    except Exception as e:
+        log.exception('Issues in plot_16S in "%s"', run_path)
+        raise e
+    finally:
+        log.info('Plotted %s ', len(plot_map.keys()))
+        return plot_map
+
+
+#TODO: define plot_spike_pcts for bar chart
+#TODO: define plot_spike_comparisons for scatter charts
+def plot_spike_pcts(run_path, compare_columns=[]):
+    """if 16S pipeline's file with percent of spike reads exists:
+       then create scatter plots from the tsv data within.
+       Return the plotly-specific interactive output, or only the svg data.
+       params:
+         run_path: APath of sequencer run
+         compare_columns list: [colname, col2, ...] to compare by division
+    """
+    log.info('Plotting 16S pipeline pct reads of spikes')
+    # pre-create dict of file paths:
+    plot_map = {} # e.g. {'file.name': 'path to plotly output html file or svg image'}
+    try:
+        # check file(s) exist / find files by glob suffix .csv
+        try:
+            fpaths = find_pipeline_qc_files(run_path, fileglob=PIPELINE_PCTS_GLOB)
+            # log.debug('plot_16S: fpaths: %s', str(fpaths))
+        except Exception as e:
+            log.exception('Issues finding files in "%s"', run_path)
+            raise e
+
+        try:
+            # pipe tsv's have no header line e.g. data:
+            # AZMA_J00T4S_1_XC...	OTU_Allobacillus	.13651877133105802000%	21	21340
+            #TODO: extra hack of three zymo spikes: ignore 'OTU_Trupera' bc extracts poorly
+            colnames = ['SampleName', 'SpikeName', 'PctReads', 'SpikeReads', 'TotalReads']
+            log.debug('plot_spikes: colnames=%s', str(colnames))
+
+            try:
+                log.debug('scatter_chart: gonna make figure')
+                fig = make_subplots(rows=(len(fpaths)), cols=1)
+            except Exception as e:
+                log.exception('scatter_chart: figure')
+                raise e
+
+            for fp in fpaths:
+                # index_col: use SampleName as .Index
+                df = pd.read_csv(fp, names=colnames, index_col=0, sep='\t')
+                # df.sort_values(by=colnames, ascending=True, inplace=True)
+
+                # keep only first section (16 chars) of sample name:
+                sublength = 16
+                df.index = df.index.map(lambda s: s[0:sublength])
+                # remove % signs from last column, convert to float
+                df['PctReads'] = df['PctReads'].str.replace('%$', '', regex=True).astype(float)
+                # log.debug('plot_spikes: df.info\n'+ str(df.info()))
+
+                # pivot the data to calc % total reads are spikes
+                df_pivot = df.pivot_table(index=['SampleName', 'SpikeReads', 'TotalReads'],
+                                          columns='SpikeName',
+                                          values='PctReads',
+                                          fill_value=0) # fill missing (NaN)
+                df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
+
+                df_pivot.reset_index(level='TotalReads', inplace=True) # move index[2] to col
+                df_pivot.rename_axis('', axis=1, inplace=True) # remove 'SpikeName' label
+
+                try: # create total reads/pcts scatter charts
+                    df_totals = df_pivot.filter(['TotalReads','TotalPct'])
+                    df_totals.set_index('TotalPct', inplace=True)
+                    name='Reads vs Spike Pcts'
+                    fp_scatter = plot_scatter_chart(fp, df_totals, name)
+                except Exception:
+                    log.exception('Issues plotting scatter: file "%s" in "%s"', fp.name, run_path)
+                else:
+                    fig.add_traces(fp_scatter)
+
+                # #TODO: use spike pivot data for Spike1/Spike2/Spike3 comparison scatter chart
+                # if compare_columns:
+                #     try: # create comparison scatter charts
+                #         df_comp = df_pivot.filter(items=compare_columns)
+                #         for k,v in compare_columns.items():
+                #             df_comp = df_comp[ df_comp[k].isin(v) ]
+                #         #TODO: implement division of compared columns
+                #         fp_scatter = plot_scatter_chart(fp, df_comp)
+                #     except Exception:
+                #         log.exception('Issues plotting scatter: file "%s" in "%s"', fp.name, run_path)
+                #     else:
+                #         fig.add_trace(fp_scatter, row=2, col=1)
+
+                try:
+                    log.debug('scatter_chart: gonna make plot')
+                    fig.layout = figure_layout(title='Total Sample Reads vs Spike Total Pcts',
+                                               xtitle='Spike Total Pcts',
+                                               ytitle='Sample Reads')
+                    xaxis_mods = dict(
+                        ticksuffix = '%',
+                        fixedrange = True,
+                        rangemode = 'tozero',
+                    )
+                    fig.layout.xaxis.update(xaxis_mods)
+                    fig.layout.margin.pad = 2
+                    img_path = fp.with_suffix('.scatter')
+                    plot_opts['config']['toImageButtonOptions']['filename'] = img_path.name
+                    plot = ply.plot(fig, **plot_opts,
+                                    # filename = f'{img_path.name}.html',
+                                    )
+                    log.debug('scatter_chart: made scatter plot!')
+                except Exception as e:
+                    log.exception('scatter_chart: plot not working')
+                    raise e
+                else:
+                    plot_map[fp.stem] = plot
 
         except Exception as e:
             log.exception('Issues plotting qc files in "%s"', run_path)

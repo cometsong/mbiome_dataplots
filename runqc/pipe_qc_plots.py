@@ -521,6 +521,13 @@ def plot_spike_pcts(run_path, compare_columns=[]):
             log.debug('plot_spikes: colnames=%s', str(colnames))
 
             for fp in fpaths:
+                try: # is it empty?
+                    s = fp.stat().st_size
+                    if s==0:
+                        continue
+                except: # is it unreadable?
+                    continue
+
                 # index_col: use SampleName as .Index
                 df = pd.read_csv(fp, names=colnames, index_col=0, sep='\t')
                 # df.sort_values(by=colnames, ascending=True, inplace=True)
@@ -540,7 +547,6 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                 df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
 
                 df_pivot.reset_index(level='TotalReads', inplace=True) # move index[2] to col
-                df_pivot.rename_axis('', axis=1, inplace=True) # remove 'SpikeName' label
 
                 try: # create total reads/pcts scatter charts
                     df_totals = df_pivot.filter(['TotalReads','TotalPct'])

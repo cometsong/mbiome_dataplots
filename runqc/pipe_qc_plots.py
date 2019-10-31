@@ -120,7 +120,7 @@ def make_layout(title='', bgcolor='aliceblue', fontsize=12):
         log.debug('make_layout: margins')
         layout_margins = dict(
             l = 5,  r = 5,
-            t = 50, b = 5,
+            t = 65, b = 5,
             pad = 0,
             autoexpand = True
         )
@@ -202,7 +202,16 @@ def plot_bar_chart(fp, df):
 
         try:
             log.debug('bar_chart: gonna make layout')
-            layout = make_layout()
+            layout_title_text = ''.join([
+                'Project ',
+                parse_project_name(fp.stem),
+                ' Read Counts ',
+                ' <a style="font-size: 0.7em" href="', fp.name, '" download>',
+                '[download ', fp.suffix[1:], ' file]',
+                '</a>'
+            ])
+            layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
+            layout = make_layout(title=layout_title)
 
             log.debug('bar_chart: gonna modify layout specs')
             layout.barmode = 'stack'
@@ -284,37 +293,6 @@ def plot_bar_chart(fp, df):
                 yref = 'paper',
                 y = 1,
                 yshift = 5,
-            ))
-
-            log.debug('bar_chart: gonna create plot title and link annotation')
-            layout_title = ''.join([
-                '<a href="', fp.name, '".csv" class="strong" download>'
-                'Project ', parse_project_name(fp.stem), ' Read Counts',
-                '</a>'
-            ])
-            annotations.append(dict(
-                text = layout_title,
-                hovertext = '(download csv file)',
-                hoverlabel = dict(
-                    bgcolor = 'RoyalBlue',
-                    bordercolor = 'White',
-                    font = {'size': 12, 'color': 'White'},
-                ),
-                textangle = 0,
-                align = 'left',
-                bgcolor = 'White',
-                borderwidth = 0,
-                borderpad = 0,
-                font = {'size': 18, 'color': 'RoyalBlue'},
-                showarrow = False,
-                xanchor = 'left',
-                xref = 'paper',
-                x = 0,
-                xshift = 0,
-                yanchor = 'bottom',
-                yref = 'paper',
-                y = 1,
-                yshift = 30,
             ))
 
             log.debug('bar_chart: gonna assign layout annotations')
@@ -589,7 +567,16 @@ def plot_spike_pcts(run_path, compare_columns=[]):
 
                 try:
                     log.debug('scatter_chart: gonna make plot')
-                    fig.layout = figure_layout(title='Total Sample Reads vs Spike Total Pcts',
+                    layout_title_text = ''.join([
+                        'Project ',
+                        parse_project_name(fp.stem),
+                        ' Total Sample Reads vs Spike Total Pcts ',
+                        ' <a style="font-size: 0.7em" href="', fp.name, '" download>',
+                        '[download ', fp.suffix[1:], ' file]',
+                        '</a>'
+                    ])
+                    layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
+                    fig.layout = figure_layout(title=layout_title,
                                                xtitle='Spike Total Pcts',
                                                ytitle='Sample Reads')
                     xaxis_mods = dict(
@@ -598,7 +585,7 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                         rangemode = 'tozero',
                     )
                     fig.layout.xaxis.update(xaxis_mods)
-                    fig.layout.margin.pad = 2
+                    fig.layout.margin.pad = 1
                     img_path = fp.with_suffix('.scatter')
                     plot_opts['config']['toImageButtonOptions']['filename'] = img_path.name
                     plot = ply.plot(fig, **plot_opts,

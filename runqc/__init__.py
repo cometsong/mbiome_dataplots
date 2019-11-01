@@ -1,7 +1,3 @@
-# __all__ = ['app', 'config', 'views', 'db', 'models', 'files']
-__version_bits__ = (1, 3, 3)
-__version__ = ".".join(map(str,__version_bits__))
-
 import os
 
 from flask import Flask
@@ -13,6 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 #~~~~ runqc app pkgs ~~~~~
 from runqc.config import config
 from runqc import views
+
+from runqc import version
+__version__ = version.get_version()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Flask App Config ~~~~~
 def configure_app(app, env='default', test_config:dict={}):
@@ -158,6 +157,11 @@ def create_app(test_config:dict={}):
         }
         # return render_template('default.html', **vars)
         return styled
+
+
+    @app.context_processor
+    def version():
+        return {'__version__':__version__}
 
 
     return app

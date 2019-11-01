@@ -51,12 +51,12 @@
       <ul class="nav navbar-nav">
         <li><a href="#run_info"   >Run Info</a></li>
         <li><a href="#fastqc"     >FastQC</a></li>
-        {% if read_dist_images -%}  <li><a href="#read_dist"  >Read Distribution</a></li> {% endif %}
-        {% if run_metric_csv -%}    <li><a href="#run_metric" >Run Metrics <s>(GT)</s></a></li> {% endif %}
-        {% if qcreport_data -%}     <li><a href="#qcreport"   >Sample QC <s>(GT)</s></a></li> {% endif %}
-        {% if control_assems -%}    <li><a href="#ctrl_assem" >Controls Assemblies</a></li> {% endif %}
+        {% if read_dist_images  -%} <li><a href="#read_dist"  >Read Distribution</a></li> {% endif %}
+        {% if run_metric_csv    -%} <li><a href="#run_metric" >Run Metrics <s>(GT)</s></a></li> {% endif %}
+        {% if qcreport_data     -%} <li><a href="#qcreport"   >Sample QC <s>(GT)</s></a></li> {% endif %}
+        {% if control_assems    -%} <li><a href="#ctrl_assem" >Controls Assemblies</a></li> {% endif %}
         {% if pipe_16S_qc_plots -%} <li><a href="#pipe_16S_qc" >16S Read Counts</a></li> {% endif %}
-        {% if pipe_16S_spikes -%}   <li><a href="#pipe_spikes" >16S Spike %s</a></li> {% endif %}
+        {% if pipe_16S_spikes   -%} <li><a href="#pipe_spikes" >16S Spike %s</a></li> {% endif %}
       </ul>
     </div>
   </nav>

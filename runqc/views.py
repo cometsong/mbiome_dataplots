@@ -78,7 +78,7 @@ def run_details(run_path, subitem=''):
                 # current_app.logger.debug('subitem type: %s', pathtype)
 
                 # current_app.logger.debug('checking subitem suffix: %s %s', run_path, subitem)
-                suffixes_as_attachment = ('.xlsx', '.xls', '.csv')
+                suffixes_as_attachment = ('.xlsx', '.xls', '.csv', '.tsv')
                 # suffixes_not_attachment = ( '.png', '.jeg', '.csv' )
                 attach = False
                 if subitem.endswith(suffixes_as_attachment):
@@ -181,8 +181,11 @@ def run_details(run_path, subitem=''):
 
         # check for 16S samples' percent spike reads
         try:
-            pipe_16S_spike_pcts = plot_spike_pcts(run_abspath, flowcell)
-            #FIXME: remove? pipe_16S_spike_scat = plot_spike_comparisons(run_abspath, flowcell)
+            # Zymo Spikes:  OTU_Allobacillus  OTU_Trupera  OTU_Imtechella
+            #FIXME: provide compare_column names in ENV? in config? each run's info? NOT hardcoded!!
+            # spikes_compare_cols = current_app.config['PIPELINE_SPIKES_COMPARE_COLUMNS']
+            spikes_compare_cols = ['OTU_Allobacillus', 'OTU_Imtechella'] # HACK: hard-coded temporary!
+            pipe_16S_spike_pcts = plot_spike_pcts(run_abspath, compare_columns=spikes_compare_cols)
         except Exception as e:
             current_app.logger.exception('issues plotting charts for run spike reads: %s', run_path)
 

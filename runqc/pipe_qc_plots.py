@@ -1,4 +1,5 @@
 from pathlib import PosixPath as Path
+from itertools import permutations
 
 import pandas as pd
 import numpy as np
@@ -143,31 +144,6 @@ def make_layout(title='', bgcolor='aliceblue', fontsize=12):
         # log.debug('made layout: %s', str(layout))
     except Exception as e:
         log.exception('make_layout NOT made!!')
-        raise e
-    else:
-        return layout
-
-
-def figure_layout(title='', xtitle='', ytitle='', rows=1, cols=1):
-    """return Layout to add to Figure subplots"""
-    try:
-        log.debug('fig_layout: gonna make layout')
-        layout = make_layout(title)
-        layout.showlegend = False
-
-        log.debug('fig_layout: gonna modify layout spec: xaxis')
-        layout.xaxis.update(dict(
-            title = xtitle,
-            showspikes = False,
-        ))
-
-        log.debug('fig_layout: gonna modify layout spec: yaxis')
-        layout.yaxis.update(dict(
-            title = ytitle,
-            showspikes = True,
-        ))
-    except Exception as e:
-        log.exception('fig_layout: layout NOT made')
         raise e
     else:
         return layout
@@ -356,51 +332,6 @@ def plot_bar_chart(fp, df):
        return plot
 
 
-def plot_scatter_chart(fp, df, name=''):
-    """create scatter chart from passed dataframe, return list of resulting traces.
-    params:
-        fp:  Path of data file
-        df:  pandas dataframe
-        name: trace name (in legend)
-    """
-    try:
-        log.info('Creating scatter chart for %s', fp.name)
-        try:
-            log.debug('scatter_chart: gonna make data traces')
-            colors = [
-                'LightSteelBlue', 'LightCoral', 'OliveDrab',
-                'Silver', 'YellowGreen', 'Chocolate',
-            ]
-            markers = {'color': colors[0],
-                       'size': 5,
-                       'symbol': "circle-dot",
-                       }
-            traces = []
-            for i in range(df.columns.size):
-                colname = df.columns[i]
-                # markers.update({'color':colors[i]})
-                log.debug('scatter_chart: column: %s', colname)
-                scat = go.Scatter(
-                    x = df.index,
-                    y = df[colname],
-                    mode = 'markers',
-                    hoverinfo = "x+y",
-                    marker = markers,
-                    marker_color = colors[i],
-                    name = name,
-                )
-                scat.marker.color = colors[i]
-                traces.append(scat)
-        except Exception as e:
-            log.exception('scatter_chart: data traces NOT made')
-            raise e
-        else:
-            return traces
-    except Exception as e:
-        log.exception('scatter_chart: plotting for file "%s"', fp.name)
-        raise e
-
-
 def calc_read_diffs(df_orig, columns=[]):
     """Caclulate differences between steps of pipeline, return new dataframe"""
     if not columns:
@@ -484,8 +415,43 @@ def plot_16S_read_counts(run_path, flowcell=None, sort_by='nonhost'):
         return plot_map
 
 
-#TODO: define plot_spike_pcts for bar chart
-#TODO: define plot_spike_comparisons for scatter charts
+def plot_scatter_chart(fp, df, name=''):
+    """create scatter chart from passed dataframe, return list of resulting traces.
+    params:
+        fp:  Path of data file
+        df:  pandas dataframe
+            Note: using only x=index and y=first-column
+        name: trace name (in legend)
+    """
+    try:
+        log.info('Creating scatter chart for %s', fp.name)
+        try:
+            log.debug('scatter_chart: gonna make data traces')
+            colors = ['OliveDrab', 'YellowGreen', 'Chocolate']
+            markers = {'color': colors[0],
+                       'size': 5,
+                       'symbol': "circle-dot",
+                       }
+            colname = df.columns[0]
+            log.debug(f'scatter_chart: y={colname}')
+            scat = go.Scatter(
+                x = df.index,
+                y = df[colname],
+                mode = 'markers',
+                hoverinfo = "x+y",
+                marker = markers,
+                name = name,
+            )
+        except Exception as e:
+            log.exception('scatter_chart: data traces NOT made')
+            raise e
+        else:
+            return scat
+    except Exception as e:
+        log.exception('scatter_chart: plotting for file "%s"', fp.name)
+        raise e
+
+
 def plot_spike_pcts(run_path, compare_columns=[]):
     """if 16S pipeline's file with percent of spike reads exists:
        then create scatter plots from the tsv data within.
@@ -508,17 +474,10 @@ def plot_spike_pcts(run_path, compare_columns=[]):
 
         try:
             if fpaths:
-                log.debug('scatter_chart: gonna make figure')
-                fig = make_subplots(rows=(len(fpaths)), cols=1)
+                log.debug('spike pcts: goint to scatter')
             else:
-                log.debug('scatter_chart: no files found')
+                log.debug('spike pcts: no files found')
                 return plot_map
-
-            # pipe tsv's have no header line e.g. data:
-            # AZMA_J00T4S_1_XC...	OTU_Allobacillus	.13651877133105802000%	21	21340
-            #TODO: extra hack of three zymo spikes: ignore 'OTU_Trupera' bc extracts poorly
-            colnames = ['SampleName', 'SpikeName', 'PctReads', 'SpikeReads', 'TotalReads']
-            log.debug('plot_spikes: colnames=%s', str(colnames))
 
             for fp in fpaths:
                 try: # is it empty?
@@ -528,75 +487,133 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                 except: # is it unreadable?
                     continue
 
-                # index_col: use SampleName as .Index
-                df = pd.read_csv(fp, names=colnames, index_col=0, sep='\t')
-                # df.sort_values(by=colnames, ascending=True, inplace=True)
+                # pipe tsv's have no header line e.g. data:
+                # AZMA_J00T4S_1_XC...	OTU_Allobacillus	.13651877133105802000%	21	21340
+                colnames = ['SampleName', 'SpikeName', 'PctReads', 'SpikeReads', 'TotalReads']
+                # log.debug('plot_spikes: colnames=%s', str(colnames))
 
-                # keep only first section (16 chars) of sample name:
-                sublength = 16
-                df.index = df.index.map(lambda s: s[0:sublength])
+                """determine rows and cols for 'specs' of subplots; dependent on compares"""
+                fig_title = 'Sample Reads vs % Spike Reads'
+                num_rows = 1
+                num_cols = 1
+                plot_height = 350
+                if compare_columns:
+                    num_rows+=1
+                    plot_height = 800
+                    comp_names = tuple({f'{p0} vs {p1}'
+                                        for p0,p1 in
+                                        permutations(compare_columns, r=2)})
+                    num_cols = len( comp_names )
+                    sub_titles = (fig_title,) + comp_names
+
+                    firstrow = [{'rowspan':1, 'colspan':num_cols}]
+                    firstrow += [None for c in range(1, num_cols)]
+                    fig_spec = [firstrow]
+
+                    coldicts = [{} for c in range(num_cols)]
+                    fig_spec.extend([ coldicts for r in range(1, num_rows) ])
+                    # log.debug(f'fig subplot spec: {fig_spec}')
+                else:
+                    fig_spec = [[{}]]
+                    sub_titles = (fig_title,)
+
+                log.warning(f'fig sub_titles: {sub_titles}')
+                fig = make_subplots(rows=num_rows,
+                                    cols=num_cols,
+                                    subplot_titles=sub_titles,
+                                    specs=fig_spec,
+                                    print_grid=True
+                                    )
+
+                log.debug('fig.layout: gonna make layout')
+                layout_title_text = ''.join([
+                    f'Project {parse_project_name(fp.stem)!s} Spike Reads',
+                    ' <a style="font-size: 0.7em" href="', fp.name, '" download>',
+                    '[download ', fp.suffix[1:], ' file]',
+                    '</a>'
+                ])
+                layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
+                fig.layout.title = layout_title
+                fig.layout.height = plot_height
+                fig.layout.showlegend = False
+                # log.debug(f'fig.layout: {fig.layout}')
+
+                sub_axes_opts = dict(
+                    type = 'linear',
+                    rangemode = 'tozero',
+                    linecolor = 'black',
+                    linewidth = 1,
+                    zeroline = True,
+                    showline = True,
+                    mirror = True,
+                    showticklabels = True,
+                    ticks = 'outside',
+                    tickmode = 'auto',
+                    tickangle = 45,
+                    ticklen = 5,
+                    tickwidth = 2,
+                    nticks = 11,
+                )
+
+                """Gen DataFrame from tsv file"""
+                log.debug('Reading spike tsv file.')
+                df = pd.read_csv(fp, names=colnames, sep='\t')
+                # del extra col: SampleName:
+                del df['SampleName']
+
                 # remove % signs from last column, convert to float
                 df['PctReads'] = df['PctReads'].str.replace('%$', '', regex=True).astype(float)
                 # log.debug('plot_spikes: df.info\n'+ str(df.info()))
 
-                # pivot the data to calc % total reads are spikes
-                df_pivot = df.pivot_table(index=['SampleName', 'SpikeReads', 'TotalReads'],
-                                          columns='SpikeName',
-                                          values='PctReads',
-                                          fill_value=0) # fill missing (NaN)
+                # pivot the data to calc % total spike reads
+                df_pivot = df.pivot(index='TotalReads', columns='SpikeName', values='PctReads')
+                df_pivot.fillna(1, inplace=True)
                 df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
 
-                df_pivot.reset_index(level='TotalReads', inplace=True) # move index[2] to col
+                df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
 
                 try: # create total reads/pcts scatter charts
                     df_totals = df_pivot.filter(['TotalReads','TotalPct'])
                     df_totals.set_index('TotalPct', inplace=True)
-                    name='Reads vs Spike Pcts'
-                    fp_scatter = plot_scatter_chart(fp, df_totals, name)
+                    fp_scatter = plot_scatter_chart(fp, df_totals)
                 except Exception:
                     log.exception('Issues plotting scatter: file "%s" in "%s"', fp.name, run_path)
                 else:
-                    fig.add_traces(fp_scatter)
+                    fig.add_trace(fp_scatter, row=1, col=1)
+                    fig.update_xaxes(row=1, col=1,
+                                     title_text='% Spike Reads',
+                                     ticksuffix='%',
+                                     **sub_axes_opts
+                                    )
+                    fig.update_yaxes(row=1, col=1,
+                                     title_text='Sample Reads',
+                                     **sub_axes_opts
+                                     )
 
-                # #TODO: use spike pivot data for Spike1/Spike2/Spike3 comparison scatter chart
-                # if compare_columns:
-                #     try: # create comparison scatter charts
-                #         df_comp = df_pivot.filter(items=compare_columns)
-                #         for k,v in compare_columns.items():
-                #             df_comp = df_comp[ df_comp[k].isin(v) ]
-                #         #TODO: implement division of compared columns
-                #         fp_scatter = plot_scatter_chart(fp, df_comp)
-                #     except Exception:
-                #         log.exception('Issues plotting scatter: file "%s" in "%s"', fp.name, run_path)
-                #     else:
-                #         fig.add_trace(fp_scatter, row=2, col=1)
+                if compare_columns:
+                    try: # create comparison scatter charts
+                        #NOTE: Requires compare_columns elements to hold existing key Names of cols!
+                        #TODO: check items in compare_columns matching values in SpikeNames
+                        df_comp = df_pivot.filter(items=compare_columns)
 
+                        for num, comps in enumerate( permutations(compare_columns, r=2), 1 ):
+                            cmp_div = df_comp[comps[0]]/df_comp[comps[1]]
+                            df_div = pd.DataFrame(cmp_div)
+                            fp_scatter = plot_scatter_chart(fp, df_div)
+                            fig.add_trace(fp_scatter, row=2, col=num)
+                            fig.update_xaxes(row=2, col=num, **sub_axes_opts)
+                            fig.update_yaxes(row=2, col=num, **sub_axes_opts)
+
+                    except Exception:
+                        log.exception('Issues comparing spikes: file "%s" in "%s"', fp.name, run_path)
+
+                # log.debug(f'fig json: {fig.to_plotly_json()}')
                 try:
                     log.debug('scatter_chart: gonna make plot')
-                    layout_title_text = ''.join([
-                        'Project ',
-                        parse_project_name(fp.stem),
-                        ' Total Sample Reads vs Spike Total Pcts ',
-                        ' <a style="font-size: 0.7em" href="', fp.name, '" download>',
-                        '[download ', fp.suffix[1:], ' file]',
-                        '</a>'
-                    ])
-                    layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
-                    fig.layout = figure_layout(title=layout_title,
-                                               xtitle='Spike Total Pcts',
-                                               ytitle='Sample Reads')
-                    xaxis_mods = dict(
-                        ticksuffix = '%',
-                        fixedrange = True,
-                        rangemode = 'tozero',
-                    )
-                    fig.layout.xaxis.update(xaxis_mods)
-                    fig.layout.margin.pad = 1
+
                     img_path = fp.with_suffix('.scatter')
                     plot_opts['config']['toImageButtonOptions']['filename'] = img_path.name
-                    plot = ply.plot(fig, **plot_opts,
-                                    # filename = f'{img_path.name}.html',
-                                    )
+                    plot = ply.plot(fig, **plot_opts)
                     log.debug('scatter_chart: made scatter plot!')
                 except Exception as e:
                     log.exception('scatter_chart: plot not working')

@@ -211,7 +211,7 @@ def run_details(run_path, subitem=''):
 @run_info.route('/<path:run_path>/fastqc/',
                 defaults={'subitem': 'files'}
                 )
-@run_info.route('/<run_path>/fastqc/<subitem>', strict_slashes=True,)
+@run_info.route('/<path:run_path>/fastqc/<subitem>', strict_slashes=True,)
 def fastqc_list(run_path, subitem='files'):
     """show list of links to run's fastqc html files"""
     fastqc_path = 'fastqc'
@@ -268,12 +268,12 @@ def run_pipe_reads(run_path):
 
 
 # @run_info.route('/<path:run_path>/<subpath>') #, strict_slashes=True)
-def run_sub_path(run_path, run_sub_path):
+def run_sub_path(run_path, sub_path):
     """show run sub path"""
     msg = f'view "run_sub_path" with args({run_path}, {sub_path})'
     vars = {
         'run_path': run_path,
-        'sub_path': run_sub_path,
+        'sub_path': sub_path,
     }
     # return render_template('default.html', **vars)
     return f'This page is going with {msg}', 404

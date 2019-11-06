@@ -1,8 +1,7 @@
 import os
-from pathlib import PosixPath as Path
 
-from flask import Blueprint, current_app, json
-from flask import make_response, render_template, redirect, request, send_from_directory
+from flask import Blueprint, current_app
+from flask import make_response, render_template, redirect, send_from_directory
 
 from runqc.pipe_qc_plots import (
     plot_16S_read_counts,
@@ -25,7 +24,7 @@ def run_list():
     """show list of run names."""
     datasets = current_app.config['RUN_DATASETS']
     url_root = current_app.config['APPLICATION_ROOT']
-    
+
     run_dirs = {}
     run_dir_list = make_tree(datasets)
     for folder in run_dir_list['contents']:
@@ -53,10 +52,6 @@ def run_list():
 @run_info.route('/<path:run_path>/<path:subitem>')
 # @check_run_info_json(run_path)
 def run_details(run_path, subitem=''):
-    datasets = current_app.config['RUN_DATASETS']
-    # data_dir = os.path.dirname(datasets) 
-    url_root = current_app.config['APPLICATION_ROOT']
-
     current_app.logger.info('Getting details for %s', run_path)
     run_json = 'run_info.json'
     run_abspath = os.path.join(
@@ -99,7 +94,6 @@ def run_details(run_path, subitem=''):
             except: flowcell = ''
         else: # unexpected folder name structure
             gt_project = run_name
-            import_date = ''
             flowcell = ''
 
         # load sequencer core's run info from json or make it
@@ -223,9 +217,7 @@ def fastqc_list(run_path, subitem='files'):
     fastqc_path = 'fastqc'
 
     datasets = current_app.config['RUN_DATASETS']
-    url_root = current_app.config['APPLICATION_ROOT']
     fqc_abspath = os.path.join(datasets, str(run_path), fastqc_path)
-    fqc_urlpath = os.path.join(str(run_path), fastqc_path)
 
     if subitem.endswith('.html'):
         return send_from_directory(fqc_abspath, subitem, as_attachment=False)

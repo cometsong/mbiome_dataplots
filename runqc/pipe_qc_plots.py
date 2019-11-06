@@ -159,8 +159,6 @@ def plot_bar_chart(fp, df):
         log.info('Creating bar chart for %s', fp.name)
 
         image_name = fp.stem #+ '.svg'
-        file_name = fp.stem + '.html'
-        # log.debug('bar_chart: image: %s, file: %s', image_name, file_name)
 
         try:
             log.debug('bar_chart: gonna set display vars')
@@ -318,9 +316,6 @@ def plot_bar_chart(fp, df):
 
             plot_opts['config']['toImageButtonOptions']['filename'] = image_name
             plot = ply.plot(fig, **plot_opts)
-            # log.debug('bar_chart: made bar plot!')
-            # log.debug('bar_chart: plots: %s', str(plots))
-
         except Exception as e:
             log.exception('bar_chart: plot not working')
             raise e

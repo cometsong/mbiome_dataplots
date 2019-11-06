@@ -629,15 +629,29 @@ def plot_spike_pcts(run_path, compare_columns=[]):
 
 
 if __name__ == '__main__':
-    try:
-        # run_abspath = Path('/var/www/apps/run_qc_devel/runs/20180611_18-microbe-028_BNYL2_qc')
-        # run_abspath = Path('/var/www/html/run_qc_devel/20180611_18-microbe-028_BNYL2_qc')
-        # run_abspath = '/var/www/apps/run_qc_devel/runs/20180611_18-microbe-028_BNYL2_qc'
-        run_abspath = Path('/var/www/apps/run_qc_devel/runs/20180605_18-microbe-027_BNYKP_qc')
-        flowcell = 'BNYL2'
-        pipeline_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
-        print(f'pipeline_16S_qc_plots: {pipeline_16S_qc_plots!s}')
+    try: # base tests
+        from flask import Flask
+        app = Flask(__name__)
+        with app.app_context():
+            plot_opts = dict(
+                output_type = 'div',
+                include_plotlyjs = False,
+                config = plotly_config,
+            )
+
+            run_abspath = Path('/var/www/apps/run_qc_devel/runs/20180605_18-microbe-027_BNYKP_qc')
+            flowcell = 'BNYL2'
+            # pipeline_16S_qc_plots = plot_16S_read_counts(run_abspath, flowcell)
+            # print(f'pipeline_16S_qc_plots: {pipeline_16S_qc_plots!s}')
+
+            run_abspath = Path('/var/www/apps/run_qc_devel/runs/20190909_19-microbe-028_CJJ4V_qc')
+            flowcell = 'CJJ4V'
+            comp_cols = [ 'OTU_Allobacillus', 'OTU_Imtechella' ]
+            # plot_spikes = plot_spike_pcts(run_abspath, compare_columns=['otu1', 'otu3'])
+            plot_spikes = plot_spike_pcts(run_abspath, compare_columns=comp_cols)
+            # plot_spikes = plot_spike_pcts(run_abspath)
+            log.debug(layout_axis_defaults(axis_title='', title='Ttle', auto_margins=False))
+
     except Exception as e:
-        # current_app.logger.error('issues plotting bar charts for run: %s', run_path) #TODO: is 'run_path var type 'Path' ??
-        log.exception('issues plotting bar charts for run: %s', run_path)
+        log.exception('issues plotting bar charts for run')
         raise e

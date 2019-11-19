@@ -485,6 +485,32 @@ def plot_spike_pcts(run_path, bar_chart=True):
                 colnames = ['SampleName', 'SpikeName', 'PctReads', 'SpikeReads', 'TotalReads']
                 # log.debug('plot_spikes: colnames=%s', str(colnames))
 
+                """Gen DataFrame from tsv file"""
+                log.debug('Reading spike tsv file.')
+                df = pd.read_csv(fp, names=colnames, sep='\t')
+
+                # remove % signs from PctReads column, convert to float
+                df['PctReads'] = df['PctReads'].str.replace('%$', '', regex=True).astype(float)
+
+                # pivot the data to calc % and total spike reads
+                df_pivot = df.pivot_table(index=['SampleName','TotalReads'],
+                                          columns='SpikeName', values='PctReads',
+                                          fill_value=0)
+                df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
+                df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
+
+                df_reads = df.pivot_table(index='SampleName', columns='SpikeName',
+                                          values='SpikeReads', fill_value=0)
+                df_pivot['TotalSpikeReads'] = df_reads.agg(sum, axis=1) # sum all spikes' reads
+
+                log.debug('pipe spikes: gonna write pivoted data file')
+                fp_pivot = fp.with_suffix('.pivot.csv')
+                if not fp_pivot.exists():
+                    df_pivot.to_csv(fp_pivot, header=True, index=True,
+                                    chunksize=df_pivot.shape[1]/5)
+
+
+
                 """determine rows and cols for 'specs' of subplots; dependent on compares"""
                 fig_title = 'Sample Reads vs % Spike Reads'
                 num_rows = 2
@@ -518,24 +544,6 @@ def plot_spike_pcts(run_path, bar_chart=True):
                     nticks = 11,
                 )
 
-                """Gen DataFrame from tsv file"""
-                log.debug('Reading spike tsv file.')
-                df = pd.read_csv(fp, names=colnames, sep='\t')
-
-                # remove % signs from PctReads column, convert to float
-                df['PctReads'] = df['PctReads'].str.replace('%$', '', regex=True).astype(float)
-
-                # pivot the data to calc % and total spike reads
-                df_pivot = df.pivot_table(index=['SampleName','TotalReads'],
-                                          columns='SpikeName', values='PctReads',
-                                          fill_value=0)
-                df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
-                df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
-
-                df_reads = df.pivot_table(index='SampleName', columns='SpikeName',
-                                          values='SpikeReads', fill_value=0)
-                df_pivot['TotalSpikeReads'] = df_reads.agg(sum, axis=1) # sum all spikes' reads
-
                 try: # create total reads/pcts scatter charts
                     df_totals = df_pivot.filter(['TotalReads','TotalPct'])
                     df_totals.set_index('TotalPct', inplace=True)
@@ -544,21 +552,10 @@ def plot_spike_pcts(run_path, bar_chart=True):
                     log.exception('Issues plotting scatter: file "%s" in "%s"', fp.name, run_path)
                 else:
                     fig.add_trace(fp_scatter, row=1, col=1)
-                    fig.update_xaxes(row=1, col=1,
-                                     title_text='% Spike Reads',
-                                     ticksuffix='%',
-                                     **sub_axes_opts
-                                    )
-                    fig.update_yaxes(row=1, col=1,
-                                     title_text='Sample Reads',
-                                     **sub_axes_opts
-                                     )
-
-                log.debug('pipe spikes: gonna write pivoted data file')
-                fp_pivot = fp.with_suffix('.pivot.csv')
-                if not fp_pivot.exists():
-                    df_pivot.to_csv(fp_pivot, header=True, index=True,
-                                    chunksize=df_pivot.shape[1]/5)
+                    fig.update_xaxes(title_text='% Spike Reads', ticksuffix='%',
+                                     row=2, col=1, **sub_axes_opts)
+                    fig.update_yaxes(title_text='Sample Reads',
+                                     row=2, col=1, **sub_axes_opts)
 
                 log.debug('fig.layout: layout title')
                 layout_title_text = ''.join([

@@ -175,9 +175,6 @@ def run_details(run_path, subitem=''):
 
         # check for 16S samples' percent spike reads
         try:
-            # Zymo Spikes:  OTU_Allobacillus  OTU_Trupera  OTU_Imtechella
-            #FIXME: provide compare_column names in ENV? in config? each run's info? NOT hardcoded!!
-            # spikes_compare_cols = current_app.config['PIPELINE_SPIKES_COMPARE_COLUMNS']
             pipe_16S_spike_pcts = plot_spike_pcts(run_abspath)
         except Exception as e:
             current_app.logger.exception('issues plotting charts for run spike reads: %s', run_path)

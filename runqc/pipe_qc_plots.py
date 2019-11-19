@@ -520,19 +520,6 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                                     print_grid=True
                                     )
 
-                log.debug('fig.layout: gonna make layout')
-                layout_title_text = ''.join([
-                    f'Project {parse_project_name(fp.stem)!s} Spike Reads',
-                    ' <a style="font-size: 0.7em" href="', fp.name, '" download>',
-                    '[download ', fp.suffix[1:], ' file]',
-                    '</a>'
-                ])
-                layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
-                fig.layout.title = layout_title
-                fig.layout.height = plot_height
-                fig.layout.showlegend = False
-                # log.debug(f'fig.layout: {fig.layout}')
-
                 sub_axes_opts = dict(
                     type = 'linear',
                     rangemode = 'tozero',
@@ -553,19 +540,20 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                 """Gen DataFrame from tsv file"""
                 log.debug('Reading spike tsv file.')
                 df = pd.read_csv(fp, names=colnames, sep='\t')
-                # del extra col: SampleName:
-                del df['SampleName']
 
-                # remove % signs from last column, convert to float
+                # remove % signs from PctReads column, convert to float
                 df['PctReads'] = df['PctReads'].str.replace('%$', '', regex=True).astype(float)
-                # log.debug('plot_spikes: df.info\n'+ str(df.info()))
 
-                # pivot the data to calc % total spike reads
-                df_pivot = df.pivot(index='TotalReads', columns='SpikeName', values='PctReads')
-                df_pivot.fillna(1, inplace=True)
-                df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
-
+                # pivot the data to calc % and total spike reads
+                df_pivot = df.pivot_table(index=['SampleName','TotalReads'],
+                                          columns='SpikeName', values='PctReads',
+                                          fill_value=0, aggfunc=np.sum,
+                                          margins=True, margins_name='TotalPct')
                 df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
+
+                df_reads = df.pivot_table(index='SampleName', columns='SpikeName',
+                                          values='SpikeReads', fill_value=0)
+                df_pivot['TotalSpikeReads'] = df_reads.agg(sum, axis=1) # sum all spikes' reads
 
                 try: # create total reads/pcts scatter charts
                     df_totals = df_pivot.filter(['TotalReads','TotalPct'])
@@ -591,6 +579,12 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                         #TODO: check items in compare_columns matching values in SpikeNames
                         df_comp = df_pivot.filter(items=compare_columns)
 
+                log.debug('scatter_chart: gonna write pivoted data file')
+                fp_pivot = fp.with_suffix('.pivot.csv')
+                if not fp_pivot.exists():
+                    df_pivot.to_csv(fp_pivot, header=True, index=True,
+                                    chunksize=df.shape[1]/5)
+
                         for num, comps in enumerate( permutations(compare_columns, r=2), 1 ):
                             cmp_div = df_comp[comps[0]]/df_comp[comps[1]]
                             df_div = pd.DataFrame(cmp_div)
@@ -601,6 +595,18 @@ def plot_spike_pcts(run_path, compare_columns=[]):
 
                     except Exception:
                         log.exception('Issues comparing spikes: file "%s" in "%s"', fp.name, run_path)
+
+                log.debug('fig.layout: layout title')
+                layout_title_text = ''.join([
+                    f'Project {parse_project_name(fp.stem)!s} Spike Reads',
+                    ' <a style="font-size: 0.7em" href="', fp_pivot.name, '" download>',
+                    '[download ', fp_pivot.suffix[1:], ' file]',
+                    '</a>'
+                ])
+                layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
+                fig.layout.title = layout_title
+                fig.layout.showlegend = False
+                # log.debug(f'fig.layout: {fig.layout}')
 
                 # log.debug(f'fig json: {fig.to_plotly_json()}')
                 try:

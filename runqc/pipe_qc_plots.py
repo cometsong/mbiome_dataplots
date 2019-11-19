@@ -554,7 +554,7 @@ def plot_spike_pcts(run_path, bar_chart=True):
                                      **sub_axes_opts
                                      )
 
-                log.debug('scatter_chart: gonna write pivoted data file')
+                log.debug('pipe spikes: gonna write pivoted data file')
                 fp_pivot = fp.with_suffix('.pivot.csv')
                 if not fp_pivot.exists():
                     df_pivot.to_csv(fp_pivot, header=True, index=True,
@@ -573,14 +573,14 @@ def plot_spike_pcts(run_path, bar_chart=True):
                 # log.debug(f'fig.layout: {fig.layout}')
 
                 try:
-                    log.debug('scatter_chart: gonna make plot')
+                    log.debug('pipe spikes: gonna make plot')
 
                     img_path = fp.with_suffix('.scatter')
                     plot_opts['config']['toImageButtonOptions']['filename'] = img_path.name
                     plot = ply.plot(fig, **plot_opts)
-                    log.debug('scatter_chart: made scatter plot!')
+                    log.debug('pipe spikes: made scatter plot!')
                 except Exception as e:
-                    log.exception('scatter_chart: plot not working')
+                    log.exception('pipe spikes: plot not working')
                     raise e
                 else:
                     plot_map[fp.stem] = plot

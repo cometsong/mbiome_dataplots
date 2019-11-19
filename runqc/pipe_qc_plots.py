@@ -583,7 +583,7 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                 fp_pivot = fp.with_suffix('.pivot.csv')
                 if not fp_pivot.exists():
                     df_pivot.to_csv(fp_pivot, header=True, index=True,
-                                    chunksize=df.shape[1]/5)
+                                    chunksize=df_pivot.shape[1]/5)
 
                         for num, comps in enumerate( permutations(compare_columns, r=2), 1 ):
                             cmp_div = df_comp[comps[0]]/df_comp[comps[1]]

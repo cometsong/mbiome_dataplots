@@ -447,13 +447,12 @@ def plot_scatter_chart(fp, df, name=''):
         raise e
 
 
-def plot_spike_pcts(run_path, compare_columns=[]):
+def plot_spike_pcts(run_path, bar_chart=True):
     """if 16S pipeline's file with percent of spike reads exists:
        then create scatter plots from the tsv data within.
        Return the plotly-specific interactive output, or only the svg data.
        params:
          run_path: Path of sequencer run
-         compare_columns list: [colname, col2, ...] to compare by division
     """
     log.info('Plotting 16S pipeline pct reads of spikes')
     # pre-create dict of file paths:
@@ -462,7 +461,6 @@ def plot_spike_pcts(run_path, compare_columns=[]):
         # check file(s) exist / find files by glob suffix .csv
         try:
             fpaths = find_pipeline_qc_files(run_path, fileglob=PIPELINE_PCTS_GLOB)
-            # log.debug('plot_16S: fpaths: %s', str(fpaths))
         except Exception as e:
             log.exception('Issues finding files in "%s"', run_path)
             raise e
@@ -489,30 +487,13 @@ def plot_spike_pcts(run_path, compare_columns=[]):
 
                 """determine rows and cols for 'specs' of subplots; dependent on compares"""
                 fig_title = 'Sample Reads vs % Spike Reads'
-                num_rows = 1
+                num_rows = 2
                 num_cols = 1
-                plot_height = 350
-                if compare_columns:
-                    num_rows+=1
-                    plot_height = 800
-                    comp_names = tuple({f'{p0} vs {p1}'
-                                        for p0,p1 in
-                                        permutations(compare_columns, r=2)})
-                    num_cols = len( comp_names )
-                    sub_titles = (fig_title,) + comp_names
-
-                    firstrow = [{'rowspan':1, 'colspan':num_cols}]
-                    firstrow += [None for c in range(1, num_cols)]
-                    fig_spec = [firstrow]
-
-                    coldicts = [{} for c in range(num_cols)]
-                    fig_spec.extend([ coldicts for r in range(1, num_rows) ])
-                    # log.debug(f'fig subplot spec: {fig_spec}')
-                else:
-                    fig_spec = [[{}]]
-                    sub_titles = (fig_title,)
-
+                fig_spec = [[{}],[{}]]
+                sub_titles = (fig_title,)
                 log.warning(f'fig sub_titles: {sub_titles}')
+
+                log.debug('fig: gonna make subplots')
                 fig = make_subplots(rows=num_rows,
                                     cols=num_cols,
                                     subplot_titles=sub_titles,
@@ -573,28 +554,11 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                                      **sub_axes_opts
                                      )
 
-                if compare_columns:
-                    try: # create comparison scatter charts
-                        #NOTE: Requires compare_columns elements to hold existing key Names of cols!
-                        #TODO: check items in compare_columns matching values in SpikeNames
-                        df_comp = df_pivot.filter(items=compare_columns)
-
                 log.debug('scatter_chart: gonna write pivoted data file')
                 fp_pivot = fp.with_suffix('.pivot.csv')
                 if not fp_pivot.exists():
                     df_pivot.to_csv(fp_pivot, header=True, index=True,
                                     chunksize=df_pivot.shape[1]/5)
-
-                        for num, comps in enumerate( permutations(compare_columns, r=2), 1 ):
-                            cmp_div = df_comp[comps[0]]/df_comp[comps[1]]
-                            df_div = pd.DataFrame(cmp_div)
-                            fp_scatter = plot_scatter_chart(fp, df_div)
-                            fig.add_trace(fp_scatter, row=2, col=num)
-                            fig.update_xaxes(row=2, col=num, **sub_axes_opts)
-                            fig.update_yaxes(row=2, col=num, **sub_axes_opts)
-
-                    except Exception:
-                        log.exception('Issues comparing spikes: file "%s" in "%s"', fp.name, run_path)
 
                 log.debug('fig.layout: layout title')
                 layout_title_text = ''.join([
@@ -608,7 +572,6 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                 fig.layout.showlegend = False
                 # log.debug(f'fig.layout: {fig.layout}')
 
-                # log.debug(f'fig json: {fig.to_plotly_json()}')
                 try:
                     log.debug('scatter_chart: gonna make plot')
 
@@ -653,10 +616,8 @@ if __name__ == '__main__':
             run_abspath = Path('/var/www/apps/run_qc_devel/runs/20190909_19-microbe-028_CJJ4V_qc')
             flowcell = 'CJJ4V'
             comp_cols = [ 'OTU_Allobacillus', 'OTU_Imtechella' ]
-            # plot_spikes = plot_spike_pcts(run_abspath, compare_columns=['otu1', 'otu3'])
-            plot_spikes = plot_spike_pcts(run_abspath, compare_columns=comp_cols)
-            # plot_spikes = plot_spike_pcts(run_abspath)
-            log.debug(layout_axis_defaults(axis_title='', title='Ttle', auto_margins=False))
+            plot_spikes = plot_spike_pcts(run_abspath)
+            # log.debug(layout_axis_defaults(axis_title='', title='Ttle', auto_margins=False))
 
     except Exception as e:
         log.exception('issues plotting bar charts for run')

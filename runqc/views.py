@@ -178,8 +178,7 @@ def run_details(run_path, subitem=''):
             # Zymo Spikes:  OTU_Allobacillus  OTU_Trupera  OTU_Imtechella
             #FIXME: provide compare_column names in ENV? in config? each run's info? NOT hardcoded!!
             # spikes_compare_cols = current_app.config['PIPELINE_SPIKES_COMPARE_COLUMNS']
-            spikes_compare_cols = ['OTU_Allobacillus', 'OTU_Imtechella'] # HACK: hard-coded temporary!
-            pipe_16S_spike_pcts = plot_spike_pcts(run_abspath, compare_columns=spikes_compare_cols)
+            pipe_16S_spike_pcts = plot_spike_pcts(run_abspath)
         except Exception as e:
             current_app.logger.exception('issues plotting charts for run spike reads: %s', run_path)
 

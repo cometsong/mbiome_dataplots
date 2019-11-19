@@ -547,8 +547,8 @@ def plot_spike_pcts(run_path, compare_columns=[]):
                 # pivot the data to calc % and total spike reads
                 df_pivot = df.pivot_table(index=['SampleName','TotalReads'],
                                           columns='SpikeName', values='PctReads',
-                                          fill_value=0, aggfunc=np.sum,
-                                          margins=True, margins_name='TotalPct')
+                                          fill_value=0)
+                df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
                 df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
 
                 df_reads = df.pivot_table(index='SampleName', columns='SpikeName',

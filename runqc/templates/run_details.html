@@ -151,8 +151,10 @@
   <section id="pipe_spikes">
     <h2>Spike Percent Reads from 16S Pipeline</h2>
     {% autoescape false -%}
-      {% for plotname, plot in pipe_16S_spikes.items() -%}
-      {{plot}}
+      {% for plotname, plots in pipe_16S_spikes.items() -%}
+        {% for plot in plots -%}
+        {{plot}}
+        {%- endfor %}
       {%- endfor %}
     {%- endautoescape %}
   </section>

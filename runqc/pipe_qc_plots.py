@@ -497,11 +497,13 @@ def plot_spike_pcts(run_path, bar_chart=True):
                                           columns='SpikeName', values='PctReads',
                                           fill_value=0)
                 df_pivot['TotalPct'] = df_pivot.agg(np.sum, axis=1) # sum % all spikes
-                df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
 
-                df_reads = df.pivot_table(index='SampleName', columns='SpikeName',
+                df_reads = df.pivot_table(index=['SampleName','TotalReads'],
+                                          columns='SpikeName',
                                           values='SpikeReads', fill_value=0)
+
                 df_pivot['TotalSpikeReads'] = df_reads.agg(sum, axis=1) # sum all spikes' reads
+                df_pivot.reset_index(level='TotalReads', inplace=True) # move index to col
 
                 log.debug('pipe spikes: gonna write pivoted data file')
                 fp_pivot = fp.with_suffix('.pivot.csv')
@@ -509,53 +511,37 @@ def plot_spike_pcts(run_path, bar_chart=True):
                     df_pivot.to_csv(fp_pivot, header=True, index=True,
                                     chunksize=df_pivot.shape[1]/5)
 
-
-
-                """determine rows and cols for 'specs' of subplots; dependent on compares"""
-                fig_title = 'Sample Reads vs % Spike Reads'
-                num_rows = 2
-                num_cols = 1
-                fig_spec = [[{}],[{}]]
-                sub_titles = (fig_title,)
-                log.warning(f'fig sub_titles: {sub_titles}')
-
-                log.debug('fig: gonna make subplots')
-                fig = make_subplots(rows=num_rows,
-                                    cols=num_cols,
-                                    subplot_titles=sub_titles,
-                                    specs=fig_spec,
-                                    print_grid=True
-                                    )
-
-                sub_axes_opts = dict(
-                    type = 'linear',
-                    rangemode = 'tozero',
-                    linecolor = 'black',
-                    linewidth = 1,
-                    zeroline = True,
-                    showline = True,
-                    mirror = True,
-                    showticklabels = True,
-                    ticks = 'outside',
-                    tickmode = 'auto',
-                    tickangle = 45,
-                    ticklen = 5,
-                    tickwidth = 2,
-                    nticks = 11,
-                )
-
                 try: # create total reads/pcts scatter charts
+                    fig_title = 'Sample Reads vs % Spike Reads'
+                    sub_axes_opts = dict(
+                        type = 'linear',
+                        rangemode = 'tozero',
+                        linecolor = 'black',
+                        linewidth = 1,
+                        zeroline = True,
+                        showline = True,
+                        mirror = True,
+                        showticklabels = True,
+                        ticks = 'outside',
+                        tickmode = 'auto',
+                        tickangle = 45,
+                        ticklen = 5,
+                        tickwidth = 2,
+                        nticks = 11,
+                    )
+
                     df_totals = df_pivot.filter(['TotalReads','TotalPct'])
                     df_totals.set_index('TotalPct', inplace=True)
-                    fp_scatter = plot_scatter_chart(fp, df_totals)
+                    fp_scatter = plot_scatter_chart(fp, df_totals, name=fig_title)
                 except Exception:
                     log.exception('Issues plotting scatter: file "%s" in "%s"', fp.name, run_path)
                 else:
-                    fig.add_trace(fp_scatter, row=1, col=1)
+                    fig = go.Figure(data=fp_scatter)
+                    # fig.update_layout(title=fig_title)
                     fig.update_xaxes(title_text='% Spike Reads', ticksuffix='%',
-                                     row=2, col=1, **sub_axes_opts)
+                                     **sub_axes_opts)
                     fig.update_yaxes(title_text='Sample Reads',
-                                     row=2, col=1, **sub_axes_opts)
+                                     **sub_axes_opts)
 
                 log.debug('fig.layout: layout title')
                 layout_title_text = ''.join([
@@ -567,11 +553,10 @@ def plot_spike_pcts(run_path, bar_chart=True):
                 layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
                 fig.layout.title = layout_title
                 fig.layout.showlegend = False
-                # log.debug(f'fig.layout: {fig.layout}')
+                log.debug(f'fig.layout: {fig.layout}')
 
                 try:
                     log.debug('pipe spikes: gonna make plot')
-
                     img_path = fp.with_suffix('.scatter')
                     plot_opts['config']['toImageButtonOptions']['filename'] = img_path.name
                     plot = ply.plot(fig, **plot_opts)
@@ -580,7 +565,17 @@ def plot_spike_pcts(run_path, bar_chart=True):
                     log.exception('pipe spikes: plot not working')
                     raise e
                 else:
-                    plot_map[fp.stem] = plot
+                    plot_map[fp.stem] = [plot]
+
+
+                try: # create grouped bar chart, sorted by TotalReads
+                    df_reads.reset_index(level='TotalReads', inplace=True) # move index to col
+                    df_reads.sort_values(by='TotalReads', ascending=True, inplace=True)
+                    plot = plot_spikes_grouped_bar_chart(fp, df_reads)
+                except Exception:
+                    log.exception('Issues plotting bar: file "%s" in "%s"', fp.name, run_path)
+                else:
+                    plot_map[fp.stem].append(plot)
 
         except Exception as e:
             log.exception('Issues plotting qc files in "%s"', run_path)
@@ -592,6 +587,168 @@ def plot_spike_pcts(run_path, bar_chart=True):
     finally:
         log.info('Plotted %s ', len(plot_map.keys()))
         return plot_map
+
+
+def plot_spikes_grouped_bar_chart(fp, df):
+    """create bar chart from passed dataframe, then save result in fp.parent
+    params:
+        fp: Path of data file
+        df: pandas dataframe
+    """
+    try:
+        log.info('Creating bar chart for %s', fp.name)
+        try:
+            log.debug('bar_chart: gonna set display vars')
+
+            colors = [
+                'YellowGreen', 'Chocolate',
+                'LightSteelBlue', 'LightCoral', 'OliveDrab',
+                'DarkSlateBlue', 'Plum', 'Teal', 'Silver',
+            ]
+            # colors = [ 'LightSteelBlue', 'OliveDrab', 'Plum', 'Teal', ]
+            marker_line = {'color': 'Black',
+                           'width': 1 }
+        except Exception as e:
+            log.exception('bar_chart: display variables NOT set')
+            raise e
+
+        try:
+            log.debug('bar_chart: gonna make layout')
+            layout = make_layout()
+
+            log.debug('bar_chart: gonna modify layout specs')
+            layout.barmode = 'group'
+
+            # height = number of records plus top and bottom margins
+            plot_height = df.index.size * 25 \
+                          + layout.margin['t'] \
+                          + layout.margin['b']
+            layout.height = plot_height
+            log.debug(f'bar_chart: plot height: {plot_height}')
+
+            log.debug('bar_chart: gonna modify layout spec: xaxis')
+            layout.xaxis.update(dict(
+                showspikes = False,
+                ticksuffix = ' reads',
+                tickangle = 15,
+                side = 'top',
+            ))
+
+            log.debug('bar_chart: gonna modify layout spec: yaxis')
+            text_max_len = 40
+            y_ticktexts = []
+            for n in df.index:
+                y_ticktexts.append(
+                    n if len(n)<text_max_len
+                    else n[0:text_max_len]+u'\u2026' # ellipsis
+                )
+            layout.yaxis.update(dict(
+                showspikes = False,
+                mirror = True,
+                tickangle = 0,
+                tickmode = 'array',
+                tickvals = df.index,
+                ticktext = y_ticktexts,
+            ))
+
+            log.debug('bar_chart: layout variables set')
+            # log.debug('bar_chart: layout: %s', str(layout))
+        except Exception as e:
+            log.exception('bar_chart: layout NOT made')
+            raise e
+
+        try:
+            log.debug('bar_chart: gonna create annotations right side column "total" reads')
+            annotations = []
+            annot_defaults = dict(
+                font = {'size': 11, 'color': 'Black'},
+                align = 'right',
+                bgcolor = 'WhiteSmoke',
+                borderwidth = 0,
+                borderpad = 1,
+                showarrow = False,
+                xanchor = 'right',
+                xref = 'paper',
+                x = 1,
+                yref = 'y',
+            )
+            # pop column 'total' values for annotation display
+            for row_num, total in enumerate(df.pop('TotalReads')):
+                annotations.append(dict(
+                    **annot_defaults,
+                    text = f'<b>{total}</b>',
+                    y = row_num,
+                ))
+            log.debug('bar_chart: gonna create total column label annotation')
+            annotations.append(dict(
+                text = '<b>Total Reads</b>',
+                textangle = 0,
+                font = {'size': 11, 'color': 'RoyalBlue'},
+                align = 'center',
+                bgcolor = 'WhiteSmoke',
+                bordercolor = 'Black',
+                borderpad = 2,
+                showarrow = False,
+                xanchor = 'right',
+                xref = 'paper',
+                x = 1,
+                xshift = 2,
+                yanchor = 'bottom',
+                yref = 'paper',
+                y = 1,
+                yshift = 5,
+            ))
+
+            log.debug('bar_chart: gonna assign layout annotations')
+            layout['annotations'] = annotations
+        except Exception as e:
+            log.exception('bar_chart: layout annotations NOT made')
+            raise e
+
+        try:
+            log.debug('bar_chart: gonna make data traces')
+            data = []
+            for i in range(df.columns.size):
+                colname = df.columns[i]
+                # log.debug('bar_chart: column: %s', colname)
+                bar = go.Bar(
+                    orientation = 'h',
+                    name = colname,
+                    hoverinfo = "x+name",
+                    hoverlabel = {'namelength':-1},
+                    marker = {'color': colors[i],
+                              'line': marker_line},
+                    x = df[colname],
+                    y = df.index,
+                    text = df[colname],
+                    textposition = 'inside',
+                    textfont = {'size': 10,
+                                'color': 'Black'},
+                )
+                data.append(bar)
+        except Exception as e:
+            log.exception('bar_chart: data traces NOT made')
+            raise e
+
+        try:
+            bar_title = "Spike Reads per Sample"
+            fig_title = dict(text=bar_title, font={'color':'SteelBlue'})
+            fig_bar = go.Figure(data=data, layout=layout)
+            fig_bar.update_layout(title=fig_title)
+
+            log.debug('pipe spikes: gonna make bar plot')
+            img_path = fp.with_suffix('.bar')
+            plot_opts['config']['toImageButtonOptions']['filename'] = img_path.name
+            plot = ply.plot(fig_bar, **plot_opts)
+            log.debug('pipe spikes: made bar plot!')
+        except Exception as e:
+            log.exception('pipe spikes: bar plot not working')
+            raise e
+    except Exception as e:
+        log.exception('bar_chart: plotting for file "%s"', fp.name)
+        raise e
+    else:
+       return plot
 
 
 if __name__ == '__main__':

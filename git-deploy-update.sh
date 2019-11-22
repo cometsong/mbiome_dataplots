@@ -13,7 +13,7 @@ else
    with_submodules='--recurse-submodules';
 fi
 
-git checkout
+git checkout \
     ${production_branch} \
     && \
 git pull \

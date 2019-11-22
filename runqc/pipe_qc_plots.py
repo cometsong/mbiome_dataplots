@@ -21,17 +21,30 @@ from runqc.plotly_config import plotly_config #, orca_config
 PIPELINE_FILE_GLOB = 'pipe_16S_QC-*.csv'
 PIPELINE_PCTS_GLOB = 'pipe_16S_spike_pcts-*.tsv'
 
-# set float display to integer only, as no floats included in qc logs (default format = None)
-pd.options.display.float_format = '{:,.0f}'.format
+try:
+    # set float display to integer only, as no floats included in qc logs (default format = None)
+    pd.options.display.float_format = '{:,.0f}'.format
 
-plot_opts = dict(
-    auto_open = False,
-    # image = 'svg', # only for automatic downloads
-    image_width = 1000,
-    output_type = 'div',
-    include_plotlyjs = False,
-    config = plotly_config,
-)
+    plot_opts = dict(
+        auto_open = False,
+        # image = 'svg', # only for automatic downloads
+        image_width = 1000,
+        output_type = 'div',
+        include_plotlyjs = False,
+        config = plotly_config,
+    )
+
+    plot_figure_title_font = {'color':'SteelBlue'}
+
+    plot_colors = [
+        'YellowGreen', 'Chocolate',
+        'LightCoral', 'OliveDrab',
+        'Plum', 'Teal', 'Silver',
+    ]
+    marker_line = {'color': 'Black', 'width': 1 }
+except Exception as e:
+    log.exception('plot: layout variables NOT set')
+    raise e
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Plot Methods ~~~~~
 
@@ -159,21 +172,6 @@ def plot_bar_chart(fp, df):
         log.info('Creating bar chart for %s', fp.name)
 
         image_name = fp.stem #+ '.svg'
-
-        try:
-            log.debug('bar_chart: gonna set display vars')
-
-            colors = [
-                'YellowGreen', 'Chocolate',
-                'LightSteelBlue', 'LightCoral', 'OliveDrab',
-                'DarkSlateBlue', 'Plum', 'Teal', 'Silver',
-            ]
-            marker_line = {'color': 'Black',
-                           'width': 1 }
-        except Exception as e:
-            log.exception('bar_chart: display variables NOT set')
-            raise e
-
         try:
             log.debug('bar_chart: gonna make layout')
             layout_title_text = ''.join([
@@ -184,7 +182,7 @@ def plot_bar_chart(fp, df):
                 '[download ', fp.suffix[1:], ' file]',
                 '</a>'
             ])
-            layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
+            layout_title = dict(text=layout_title_text, font=plot_figure_title_font)
             layout = make_layout(title=layout_title)
 
             log.debug('bar_chart: gonna modify layout specs')
@@ -286,7 +284,7 @@ def plot_bar_chart(fp, df):
                     name = colname,
                     hoverinfo = "x+name",
                     hoverlabel = {'namelength':-1},
-                    marker = {'color': colors[i],
+                    marker = {'color': plot_colors[i],
                               'line': marker_line},
                     x = df[colname],
                     y = df.index,
@@ -423,8 +421,7 @@ def plot_scatter_chart(fp, df, name=''):
         log.info('Creating scatter chart for %s', fp.name)
         try:
             log.debug('scatter_chart: gonna make data traces')
-            colors = ['OliveDrab', 'YellowGreen', 'Chocolate']
-            markers = {'color': colors[0],
+            markers = {'color': plot_colors[0],
                        'size': 5,
                        'symbol': "circle-dot",
                        }
@@ -551,7 +548,7 @@ def plot_spike_pcts(run_path, bar_chart=True):
                     '[download ', fp_pivot.suffix[1:], ' file]',
                     '</a>'
                 ])
-                layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
+                layout_title = dict(text=layout_title_text, font=plot_figure_title_font)
                 fig.layout.title = layout_title
                 fig.layout.showlegend = False
                 # log.debug(f'fig.layout: {fig.layout}')
@@ -600,15 +597,8 @@ def plot_spikes_grouped_bar_chart(fp, df):
         log.info('Creating bar chart for %s', fp.name)
         try:
             log.debug('bar_chart: gonna set display vars')
-
-            colors = [
-                'YellowGreen', 'Chocolate',
-                'LightSteelBlue', 'LightCoral', 'OliveDrab',
-                'DarkSlateBlue', 'Plum', 'Teal', 'Silver',
-            ]
-            # colors = [ 'LightSteelBlue', 'OliveDrab', 'Plum', 'Teal', ]
-            marker_line = {'color': 'Black',
-                           'width': 1 }
+            bar_title = "Percent Spike Reads per Sample"
+            fig_title = dict(text=bar_title, font=plot_figure_title_font)
         except Exception as e:
             log.exception('bar_chart: display variables NOT set')
             raise e
@@ -717,7 +707,7 @@ def plot_spikes_grouped_bar_chart(fp, df):
                     name = colname,
                     hoverinfo = "x+name",
                     hoverlabel = {'namelength':-1},
-                    marker = {'color': colors[i],
+                    marker = {'color': plot_colors[i],
                               'line': marker_line},
                     x = df[colname],
                     y = df.index,
@@ -732,8 +722,6 @@ def plot_spikes_grouped_bar_chart(fp, df):
             raise e
 
         try:
-            bar_title = "Spike Reads per Sample"
-            fig_title = dict(text=bar_title, font={'color':'SteelBlue'})
             fig_bar = go.Figure(data=data, layout=layout)
             fig_bar.update_layout(title=fig_title)
 

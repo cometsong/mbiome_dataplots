@@ -554,7 +554,7 @@ def plot_spike_pcts(run_path, bar_chart=True):
                 layout_title = dict(text=layout_title_text, font={'color':'SteelBlue'})
                 fig.layout.title = layout_title
                 fig.layout.showlegend = False
-                log.debug(f'fig.layout: {fig.layout}')
+                # log.debug(f'fig.layout: {fig.layout}')
 
                 try:
                     log.debug('pipe spikes: gonna make plot')

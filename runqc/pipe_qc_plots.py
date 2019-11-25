@@ -38,9 +38,10 @@ try:
 
     plot_colors = [
         'YellowGreen', 'Chocolate',
-        'LightCoral', 'OliveDrab',
-        'Plum', 'Teal', 'Silver',
+        'LightSteelBlue', 'LightCoral', 'OliveDrab',
+        'DarkSlateBlue', 'Plum', 'Teal', 'Silver',
     ]
+
     marker_line = {'color': 'Black', 'width': 1 }
 except Exception as e:
     log.exception('plot: layout variables NOT set')
@@ -421,7 +422,7 @@ def plot_scatter_chart(fp, df, name=''):
         log.info('Creating scatter chart for %s', fp.name)
         try:
             log.debug('scatter_chart: gonna make data traces')
-            markers = {'color': plot_colors[0],
+            markers = {'color': plot_colors[1],
                        'size': 5,
                        'symbol': "circle-dot",
                        }

@@ -567,10 +567,11 @@ def plot_spike_pcts(run_path, bar_chart=True):
                     plot_map[fp.stem] = [plot]
 
 
-                try: # create grouped bar chart, sorted by TotalReads
-                    df_reads.reset_index(level='TotalReads', inplace=True) # move index to col
-                    df_reads.sort_values(by='TotalReads', ascending=True, inplace=True)
-                    plot = plot_spikes_grouped_bar_chart(fp, df_reads)
+                try: # create grouped bar chart od spike %reads
+                    del df_pivot['TotalReads']
+                    del df_pivot['TotalSpikeReads']
+                    df_pivot.sort_values(by='TotalPct', ascending=True, inplace=True)
+                    plot = plot_spikes_grouped_bar_chart(fp, df_pivot)
                 except Exception:
                     log.exception('Issues plotting bar: file "%s" in "%s"', fp.name, run_path)
                 else:
@@ -621,7 +622,7 @@ def plot_spikes_grouped_bar_chart(fp, df):
             log.debug('bar_chart: gonna modify layout spec: xaxis')
             layout.xaxis.update(dict(
                 showspikes = False,
-                ticksuffix = ' reads',
+                ticksuffix = '%',
                 tickangle = 15,
                 side = 'top',
             ))
@@ -650,7 +651,7 @@ def plot_spikes_grouped_bar_chart(fp, df):
             raise e
 
         try:
-            log.debug('bar_chart: gonna create annotations right side column "total" reads')
+            log.debug('bar_chart: gonna create annotations right side column "total" percents')
             annotations = []
             annot_defaults = dict(
                 font = {'size': 11, 'color': 'Black'},
@@ -665,15 +666,15 @@ def plot_spikes_grouped_bar_chart(fp, df):
                 yref = 'y',
             )
             # pop column 'total' values for annotation display
-            for row_num, total in enumerate(df.pop('TotalReads')):
+            for row_num, total in enumerate(df.pop('TotalPct')):
                 annotations.append(dict(
                     **annot_defaults,
-                    text = f'<b>{total}</b>',
+                    text = f'<b>{total:4.2f}%</b>', # float: 00.00%
                     y = row_num,
                 ))
             log.debug('bar_chart: gonna create total column label annotation')
             annotations.append(dict(
-                text = '<b>Total Reads</b>',
+                text = '<b>Total Pcts</b>',
                 textangle = 0,
                 font = {'size': 11, 'color': 'RoyalBlue'},
                 align = 'center',

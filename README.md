@@ -21,23 +21,23 @@ NGS Sequencer Run QC<br/>:microbe: :dna: :mag: :dart: :heavy_check_mark:
 
 > **List of Run QC pages** <br/>
 ><img style='vertical-align:middle; position:relative; left:2em;' width="300" 
-  src="https://github.com/cometsong/mbiome_seqrun_qc/screenshots/run_qc-run_list.png"><br/>
+  src="https://github.com/cometsong/mbiome_seqrun_qc/raw/docs/screenshots/run_qc-run_list.png"><br/>
 >
 > **Base Page of Sequencer Run** <br/>
 ><img style='vertical-align:middle; position:relative; left:2em;' width="300" 
-  src="https://github.com/cometsong/mbiome_seqrun_qc/screenshots/run_qc-run01.png"><br/>
+  src="https://github.com/cometsong/mbiome_seqrun_qc/raw/docs/screenshots/run_qc-run01.png"><br/>
 >
 > **Run QC page with Read Distributions** <br/>
 ><img style='vertical-align:middle; position:relative; left:2em;' width="300" 
-  src="https://github.com/cometsong/mbiome_seqrun_qc/screenshots/run_qc-run02-read_dist.png"><br/>
+  src="https://github.com/cometsong/mbiome_seqrun_qc/raw/docs/screenshots/run_qc-run02-read_dist.png"><br/>
 >
 > **Run QC page with 16S Read Counts** <br/>
 ><img style='vertical-align:middle; position:relative; left:2em;' width="300"
-  src="https://github.com/cometsong/mbiome_seqrun_qc/screenshots/run_qc-run03-read_counts.png"><br/>
+  src="https://github.com/cometsong/mbiome_seqrun_qc/raw/docs/screenshots/run_qc-run03-read_counts.png"><br/>
 >
 > **Run QC page with Control Assembly Comparison** <br/>
 ><img style='vertical-align:middle; position:relative; left:2em;' width="300" 
-  src="https://github.com/cometsong/mbiome_seqrun_qc/screenshots/run_qc-run04-pos-ctrl.png"><br/>
+  src="https://github.com/cometsong/mbiome_seqrun_qc/raw/docs/screenshots/run_qc-run04-pos-ctrl.png"><br/>
 
 ---
 
